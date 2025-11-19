@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRED. | Digital Reputation Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        'kred-bg': '#050505',
+                        'kred-blue': '#2563EB',
+                        'kred-red': '#EF4444', /* Roșu pentru alerte */
+                        'kred-yellow': '#FBBF24', /* Galben pentru warning */
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'blink-cursor': 'blink 1s step-end infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-in-top': 'slideInTop 0.5s ease-out',
+                    },
+                    keyframes: {
+                        blink: {
+                            'from, to': { 'border-right-color': 'transparent' },
+                            '50%': { 'border-right-color': 'white' },
+                        },
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' },
+                        },
+                        slideInTop: {
+                            'from': { transform: 'translateY(-100%)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        /* Cyber Grid Background */
+        .grid-bg {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at 50% 0%, black, transparent 80%);
+        }
+
+        /* Glass Panels */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Premium Button */
+        .btn-kred {
+            background: white;
+            color: black;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 1px solid white;
+        }
+        .btn-kred:hover {
+            background: transparent;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Terminal Cursor */
+        .terminal-line {
+            border-right: 2px solid white;
+            animation: blink-cursor 1s step-end infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            width: fit-content;
+            padding-right: 5px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal-content {
+            background: #0A0A0A; /* Darker than KRED-BG */
+            border: 2px solid #EF4444; /* Alert border */
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.4); /* Red glow */
+            max-width: 500px;
+            width: 90%;
+            padding: 2.5rem;
+            text-align: center;
+            animation: slideInTop 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="fixed inset-0 grid-bg z-[-1]"></div>
+
+    <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-black/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="text-2xl font-black tracking-tighter font-sans text-white">KRED.</div>
+            <div class="hidden md:flex gap-8 text-xs text-gray-400 font-mono uppercase tracking-widest">
+                <a href="#" class="hover:text-white transition">Protocol</a>
+                <a href="#" class="hover:text-white transition">Security</a>
+            </div>
+            <button class="text-xs border border-white/20 px-5 py-2 rounded font-mono uppercase hover:bg-white hover:text-black transition">
+                Client Login
+            </button>
+        </div>
+    </nav>
+
+    <main class="min-h-screen flex flex-col justify-center items-center px-4 pt-10 relative">
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-gray-400 text-[10px] font-mono uppercase tracking-widest mb-8">
+            <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            AI Systems Operational
+        </div>
+
+        <h1 class="text-5xl md:text-8xl font-black text-center tracking-tighter leading-none mb-6">
+            OWN YOUR <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">REPUTATION.</span>
+        </h1>
+
+        <p class="text-gray-400 text-lg text-center max-w-xl mb-12 font-light leading-relaxed">
+            70% of employers check your social media.<br>
+            <strong>KRED.</strong> audits your digital past before it costs you a future.
+        </p>
+        
+        <div class="w-full max-w-3xl glass-panel rounded-xl overflow-hidden border-t border-white/10 shadow-2xl mb-12">
+            <div class="bg-black/60 px-4 py-3 flex gap-2 border-b border-white/5 items-center">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500/20"></div>
+                <div class="ml-4 text-[10px] text-gray-600 font-mono">root@kred-audit:~</div>
+            </div>
+            <div class="p-6 font-mono text-sm md:text-base h-80 overflow-hidden relative bg-black/40">
+                <div id="terminal-text" class="space-y-3 text-gray-400">
+                    <p class="terminal-line">> Initializing deep scan protocol...</p>
+                </div>
+                <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-black/40 to-transparent"></div>
+            </div>
+        </div>
+        
+        <div id="main-cta" class="hidden flex-col w-full max-w-xs gap-4"> 
+            <a href="#" class="btn-kred w-full py-4 rounded-lg text-xs uppercase block text-center flex items-center justify-center">
+                Start Forensic Audit ($29)
+            </a>
+            <p class="text-center text-[10px] text-gray-600 font-mono">SECURE SCAN: TWITTER • INSTAGRAM • WEB</p>
+        </div>
+
+    </main>
+
+    <footer class="py-8 text-center border-t border-white/5 mt-auto w-full">
+        <p class="text-gray-800 text-[10px] font-mono uppercase tracking-widest">&copy; 2025 KRED INTELLIGENCE INC.</p>
+    </footer>
+
+    <div id="warning-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="flex items-center justify-center mb-6">
+                <svg class="w-16 h-16 text-kred-red animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black text-kred-red mb-4">CRITICAL VULNERABILITIES DETECTED.</h2>
+            <p class="text-gray-300 text-lg mb-6 leading-relaxed">
+                Our AI has identified **multiple high-risk flags** in your digital footprint that could severely impact your career.
+                Full details are available in your **Forensic Audit Report**.
+            </p>
+            <p class="text-gray-500 text-sm mb-8 font-mono">Access to your comprehensive report requires validation.</p>
+            <a href="LINKUL_TAU_DE_LA_STRIPE_AICI" class="btn-kred w-full py-4 rounded-lg text-lg uppercase block text-center flex items-center justify-center">
+                Access Report Now ($29)
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal-text');
+        const mainCta = document.getElementById('main-cta');
+        const warningModal = document.getElementById('warning-modal');
+
+        const messages = [
+            { text: "> Establishing encrypted connection...", color: "text-green-500" },
+            { text: "> Target profile analysis initiated.", color: "text-white" },
+            { text: "> Scanning 7,421 archived posts (Twitter, Instagram, Web)...", color: "text-gray-400" },
+            { text: "> Potential risk identified: 2017/04/12 - Instagram (Offensive Language)", color: "text-kred-yellow" },
+            { text: "> WARNING: Hate Speech Flag (Severity: High) - 2019/08/23 - Twitter/X (Politically charged)", color: "text-kred-red" },
+            { text: "> CRITICAL VULNERABILITY: Explicit content detected - 2016/11/05 - Archived Webpage", color: "text-kred-red" },
+            { text: "> Summary: Multiple serious flags detected. Full report pending payment.", color: "text-white" },
+            { text: ">> INITIATING ALERT PROTOCOL...", color: "text-kred-red" }
+        ];
+
+        let delay = 1000;
+        let lineIndex = 0;
+
+        function typeWriter(text, element, color, callback) {
+            let i = 0;
+            element.className = color + ' terminal-line';
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.innerHTML = text.substring(0, i + 1);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    element.classList.remove('terminal-line');
+                    if (callback) callback();
+                }
+            }, 30); // Viteza de scriere mai rapidă
+        }
+
+        function playMessages() {
+            if (lineIndex < messages.length) {
+                const p = document.createElement('p');
+                terminal.appendChild(p);
+                typeWriter(messages[lineIndex].text, p, messages[lineIndex].color, () => {
+                    terminal.scrollTop = terminal.scrollHeight;
+                    lineIndex++;
+                    setTimeout(playMessages, 1200); // Pauză mai scurtă între mesaje
+                });
+            } else {
+                // După ce s-au afișat toate mesajele, deschide pop-up-ul
+                setTimeout(() => {
+                    warningModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden'; // Blochează scroll-ul paginii
+                }, 1000);
+            }
+        }
+
+        setTimeout(() => {
+            document.querySelector('.terminal-line').classList.remove('terminal-line');
+            playMessages();
+        }, 2000); 
+
+        // Adaugă aici link-ul tău real de la Stripe, atât pentru butonul principal (care e acum ascuns) cât și pentru pop-up
+        document.querySelector('.modal-content a').href = "LINKUL_TAU_DE_LA_STRIPE_AICI";
+        document.querySelector('#main-cta a').href = "LINKUL_TAU_DE_LA_STRIPE_AICI"; // Nu uita de asta dacă decizi să arăți și butonul principal
+    </script>
+</body>
+</html>
