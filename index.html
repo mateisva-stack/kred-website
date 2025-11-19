@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KRED. | Digital Reputation Audit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -20,6 +20,7 @@
                         'kred-blue': '#2563EB',
                         'kred-red': '#EF4444',
                         'kred-yellow': '#FBBF24',
+                        'kred-green': '#10B981',
                     },
                     animation: {
                         'blink-cursor': 'blink 1s step-end infinite',
@@ -36,7 +37,8 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; }
+        body { background-color: #050505; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        input, button { -webkit-appearance: none; border-radius: 0; }
         
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
@@ -51,10 +53,9 @@
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            /* Z-INDEX URIS CA SA FIM SIGURI CA NIMIC NU IL ACOPERA */
             position: relative; z-index: 9999; 
         }
-        .btn-kred:active { transform: scale(0.95); background: #ddd; } 
+        .btn-kred:active { transform: scale(0.96); opacity: 0.9; }
         
         .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
         
@@ -70,11 +71,11 @@
             display: flex; justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content { 
-            background: #0A0A0A; border: 1px solid #EF4444; 
+            background: #0A0A0A; border: 1px solid #2563EB; 
             width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
-            border-radius: 12px; position: relative; 
+            border-radius: 12px; position: relative; box-shadow: 0 0 50px rgba(37, 99, 235, 0.2);
         }
-        .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.5); user-select: none; }
+        .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.6); user-select: none; filter: blur(3px); }
         
         .hidden { display: none !important; }
     </style>
@@ -102,15 +103,18 @@
         <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12">
             <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
             
-            <div class="relative">
-                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
-                <input type="text" id="username-input" placeholder="instagram_user" 
-                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
-            </div>
+            <form id="scan-form" onsubmit="event.preventDefault(); FORCE_START();" class="w-full flex flex-col gap-4">
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
+                    <input type="text" id="username-input" placeholder="instagram_user" 
+                        class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest"
+                        autocomplete="off" autocorrect="off" autocapitalize="none">
+                </div>
 
-            <button onclick="FORCE_START()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
-                INITIATE SCAN
-            </button>
+                <button type="submit" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+                    INITIATE SCAN
+                </button>
+            </form>
             
             <p class="text-center text-xs md:text-sm text-gray-400 font-mono font-bold tracking-widest mt-2">
                 SECURE CONNECTION • ANONYMOUS • ENCRYPTED
@@ -138,40 +142,50 @@
                 <p class="text-gray-600 text-[10px] mt-1">&copy; 2025 KRED INTELLIGENCE INC.</p>
             </div>
             <div class="flex gap-6 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-                <a href="mailto:contact@kred.app" class="hover:text-white">Contact</a>
+                <a href="mailto:kred.security@proton.me" class="hover:text-white">Contact</a>
             </div>
         </div>
     </footer>
 
     <div id="warning-modal" class="modal-overlay hidden">
-        <div class="modal-content p-6 border-red-900/50 border">
+        <div class="modal-content p-6">
             <div class="flex flex-col items-center mb-5">
-                <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-3">
-                    <svg class="w-6 h-6 text-kred-red animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6 text-blue-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 </div>
-                <h2 class="text-xl font-black text-white text-center uppercase tracking-tight">Analysis Complete</h2>
-                <p class="text-kred-red text-xs font-bold tracking-widest mt-1">CRITICAL RISKS DETECTED</p>
+                <h2 class="text-xl font-black text-white text-center uppercase tracking-tight">ARCHIVES LOCATED</h2>
+                <p class="text-blue-500 text-xs font-bold tracking-widest mt-1">READY FOR ANALYSIS</p>
             </div>
 
-            <p class="text-gray-400 text-xs text-center mb-6">
-                We identified multiple high-risk flags that could impact employment eligibility.
+            <p class="text-gray-400 text-xs text-center mb-6 leading-relaxed">
+                We have successfully identified the target's digital footprint. 
+                To proceed with the <strong>Deep Forensic Analysis</strong> and generate your PDF report (delivered in 6-12h), authorization is required.
             </p>
 
             <a id="stripe-btn" href="#" class="btn-kred w-full py-4 rounded-lg text-sm font-bold uppercase block text-center mb-6 hover:bg-gray-200">
-                Unlock Full Report ($29)
+                Authorize & Start Audit ($29)
             </a>
 
-            <div class="bg-kred-gray/30 rounded border border-white/5 p-4">
+            <div class="bg-white/5 rounded border border-white/5 p-4">
                 <div class="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
-                    <span class="text-[10px] text-gray-500 uppercase font-mono">Preview Results</span>
-                    <span class="text-[10px] text-white font-bold bg-red-500/20 px-2 py-0.5 rounded">LOCKED</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-mono">Scan Queue Status</span>
+                    <span class="text-[10px] text-white font-bold bg-yellow-500/20 px-2 py-0.5 rounded">PAUSED</span>
                 </div>
+                
                 <div class="mb-3">
-                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Twitter (X)</span><span>2019</span></div>
-                    <div class="bg-black/50 p-2 rounded text-xs border-l-2 border-red-500 relative overflow-hidden">
-                        <span class="blur-text">Aggressive political language detected</span>
-                        <div class="absolute inset-0 flex items-center justify-center"><span class="text-[9px] text-white/70 font-mono bg-black/80 px-2 py-1 rounded uppercase">Hidden Content</span></div>
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Data Collection</span></div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5 mb-1">
+                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
                     </div>
+                    <div class="text-[9px] text-green-500 text-right">Complete</div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Forensic Analysis</span></div>
+                    <div class="w-full bg-gray-800 rounded-full h-1.5 mb-1">
+                        <div class="bg-blue-500 h-1.5 rounded-full animate-pulse" style="width: 5%"></div>
+                    </div>
+                    <div class="text-[9px] text-blue-400 text-right">Waiting for Authorization...</div>
                 </div>
             </div>
         </div>
@@ -186,7 +200,7 @@
             <div class="text-gray-400 text-xs leading-relaxed">
                 <p class="mb-4"><b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.</p>
                 <p class="mb-4"><b>Is it anonymous?</b><br>Yes. The target is never notified.</p>
-                <p><b>Turnaround?</b><br>Reports are generated in 2-12 hours.</p>
+                <p><b>Turnaround?</b><br>To ensure 99.9% accuracy, our forensic reports are verified and delivered via email in 6-12 hours.</p>
             </div>
             <button onclick="toggleModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
         </div>
@@ -194,41 +208,39 @@
 
     <script>
         // --- CONFIGURARE LINK STRIPE ---
-        const STRIPE_LINK = "https://buy.stripe.com/test_14AfZgeHn0wWca786s4AU00";
+        const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // --- FUNCTIA GLOBALA DE START (ACUM E IN AFARA ORICARUI LISTENER) ---
         function FORCE_START() {
-            const user = document.getElementById('username-input').value.trim();
+            const userField = document.getElementById('username-input');
+            const user = userField.value.trim();
             
-            // Validare simpla
+            userField.blur(); 
+
             if (!user) {
-                document.getElementById('username-input').style.borderColor = "red";
-                document.getElementById('username-input').placeholder = "ENTER USERNAME";
+                userField.style.borderColor = "red";
+                userField.placeholder = "ENTER USERNAME";
                 return;
             }
 
-            // Ascunde input
             document.getElementById('input-section').style.display = 'none';
-            
-            // Arata terminal
             document.getElementById('terminal-container').classList.remove('hidden');
-
-            // Ruleaza animatia
             runScript(user);
         }
 
         function runScript(username) {
             const terminal = document.getElementById('terminal-text');
+            // Mesaje de "Progres", nu de "Rezultat Gata"
             const msgs = [
-                { t: `> Target resolved: ${username}`, c: "text-green-500" },
-                { t: "> Connection established (Secure Proxy US-East-1).", c: "text-gray-500" },
-                { t: "> Scraping public archives (2013-2025)...", c: "text-white" },
-                { t: "> [!] 142 items found in web cache.", c: "text-gray-400" },
-                { t: `> WARNING: High-risk keyword match in ${username}'s history.`, c: "text-yellow-500" },
-                { t: "> CRITICAL: Aggressive sentiment detected (2019).", c: "text-kred-red" },
-                { t: "> Compiling forensic report...", c: "text-white" },
-                { t: ">> ACCESS DENIED. FULL AUDIT REQUIRED.", c: "text-kred-red" }
+                { t: `> Target acquired: ${username}`, c: "text-kred-green" },
+                { t: "> Establishing secure tunnel...", c: "text-gray-500" },
+                { t: "> Searching public archives (Twitter/X, Instagram)...", c: "text-white" },
+                { t: "> [!] 2,104 raw data points located.", c: "text-kred-blue" },
+                { t: `> Cross-referencing risk patterns...`, c: "text-gray-400" },
+                { t: `> Data capture: COMPLETE.`, c: "text-kred-green" },
+                { t: "> Initializing Forensic AI Engine...", c: "text-white" },
+                { t: "> Awaiting authorization to proceed...", c: "text-white" },
+                { t: ">> PROCESS PAUSED. PAYMENT REQUIRED.", c: "text-kred-yellow" }
             ];
 
             let i = 0;
