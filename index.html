@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KRED. | Digital Reputation Audit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -37,8 +37,7 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        input, button { -webkit-appearance: none; border-radius: 0; }
+        body { background-color: #050505; color: white; overflow-x: hidden; }
         
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
@@ -53,9 +52,9 @@
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 9999; 
+            position: relative; z-index: 9999; /* FORTAM CLICK-UL */
         }
-        .btn-kred:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-kred:active { transform: scale(0.95); background: #ddd; } 
         
         .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
         
@@ -103,18 +102,15 @@
         <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12">
             <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
             
-            <form id="scan-form" onsubmit="event.preventDefault(); FORCE_START();" class="w-full flex flex-col gap-4">
-                <div class="relative">
-                    <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
-                    <input type="text" id="username-input" placeholder="instagram_user" 
-                        class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest"
-                        autocomplete="off" autocorrect="off" autocapitalize="none">
-                </div>
+            <div class="relative">
+                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
+                <input type="text" id="username-input" placeholder="instagram_user" 
+                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
+            </div>
 
-                <button type="submit" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
-                    INITIATE SCAN
-                </button>
-            </form>
+            <button onclick="FORCE_START()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+                INITIATE SCAN
+            </button>
             
             <p class="text-center text-xs md:text-sm text-gray-400 font-mono font-bold tracking-widest mt-2">
                 SECURE CONNECTION • ANONYMOUS • ENCRYPTED
@@ -200,7 +196,7 @@
             <div class="text-gray-400 text-xs leading-relaxed">
                 <p class="mb-4"><b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.</p>
                 <p class="mb-4"><b>Is it anonymous?</b><br>Yes. The target is never notified.</p>
-                <p><b>Turnaround?</b><br>To ensure 99.9% accuracy, our forensic reports are verified and delivered via email in 6-12 hours.</p>
+                <p><b>Turnaround?</b><br>To ensure accuracy, reports are finalized in 2-12 hours.</p>
             </div>
             <button onclick="toggleModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
         </div>
@@ -211,11 +207,13 @@
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
+        // --- MECANISMUL NUCLEAR (FARA ASCULTATORI COMPLICATI) ---
         function FORCE_START() {
             const userField = document.getElementById('username-input');
             const user = userField.value.trim();
             
-            userField.blur(); 
+            // Inchide tastatura fortat
+            userField.blur();
 
             if (!user) {
                 userField.style.borderColor = "red";
@@ -230,7 +228,6 @@
 
         function runScript(username) {
             const terminal = document.getElementById('terminal-text');
-            // Mesaje de "Progres", nu de "Rezultat Gata"
             const msgs = [
                 { t: `> Target acquired: ${username}`, c: "text-kred-green" },
                 { t: "> Establishing secure tunnel...", c: "text-gray-500" },
