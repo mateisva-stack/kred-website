@@ -26,6 +26,7 @@
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'blink-cursor': 'blink 1s step-end infinite',
                         'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
                     },
                     keyframes: {
                         blink: {
@@ -35,6 +36,10 @@
                         fadeIn: {
                             'from': { opacity: '0' },
                             'to': { opacity: '1' },
+                        },
+                        slideUp: {
+                            'from': { transform: 'translateY(20px)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' },
                         }
                     }
                 }
@@ -73,7 +78,7 @@
     <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-black/80 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="text-3xl md:text-4xl font-black tracking-tighter font-sans text-white">KRED.</div>
-            <button id="nav-faq-btn" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition">
+            <button onclick="openLegal('faq')" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition">
                 FAQ
             </button>
         </div>
@@ -95,7 +100,7 @@
                     class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
             </div>
 
-            <button id="scan-btn" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+            <button onclick="startScan()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold cursor-pointer z-10 relative">
                 INITIATE SCAN
             </button>
             
@@ -126,9 +131,9 @@
             </div>
             
             <div class="flex gap-6 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-                <button id="footer-privacy" class="hover:text-white transition">Privacy Policy</button>
-                <button id="footer-terms" class="hover:text-white transition">Terms of Service</button>
-                <button id="footer-faq" class="hover:text-white transition">FAQ</button>
+                <button onclick="openLegal('privacy')" class="hover:text-white transition">Privacy Policy</button>
+                <button onclick="openLegal('terms')" class="hover:text-white transition">Terms of Service</button>
+                <button onclick="openLegal('faq')" class="hover:text-white transition">FAQ</button>
                 <a href="mailto:contact@kred.app" class="hover:text-white transition">Contact Support</a>
             </div>
         </div>
@@ -172,132 +177,99 @@
         <div class="modal-content p-8 bg-black border border-white/10">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h2 id="legal-title" class="text-xl font-bold text-white font-mono">LEGAL</h2>
-                <button id="close-legal-btn" class="text-gray-500 hover:text-white">✕</button>
+                <button onclick="closeLegal()" class="text-gray-500 hover:text-white">✕</button>
             </div>
             <div id="legal-body" class="legal-text text-left h-64 overflow-y-auto pr-2"></div>
-            <button id="close-legal-btn-2" class="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 text-white text-xs uppercase tracking-widest rounded">Close</button>
+            <button onclick="closeLegal()" class="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 text-white text-xs uppercase tracking-widest rounded">Close</button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- CONFIGURARE: PUNE LINK-UL TAU AICI ---
-            const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
-            document.getElementById('stripe-btn').href = STRIPE_LINK;
+        // --- CONFIGURARE: PUNE LINK-UL TAU DE STRIPE AICI ---
+        const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
+        
+        // Setare link imediat ce se incarca scriptul
+        document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-            // --- ELEMENTE ---
-            const scanBtn = document.getElementById('scan-btn');
+        // --- FUNCTIA PRINCIPALA (GLOBALA) ---
+        function startScan() {
             const usernameInput = document.getElementById('username-input');
             const inputSection = document.getElementById('input-section');
             const terminalContainer = document.getElementById('terminal-container');
+            
+            const username = usernameInput.value.trim();
+            if (!username) { 
+                usernameInput.style.borderColor = "red"; 
+                usernameInput.focus();
+                return; 
+            }
+            
+            // Animatie de start
+            inputSection.style.opacity = '0';
+            setTimeout(() => {
+                inputSection.classList.add('hidden');
+                terminalContainer.classList.remove('hidden');
+                runTerminalSequence(username);
+            }, 500);
+        }
+
+        function runTerminalSequence(username) {
             const terminal = document.getElementById('terminal-text');
             const warningModal = document.getElementById('warning-modal');
+            const terminalContainer = document.getElementById('terminal-container');
 
-            // --- SCAN LOGIC ---
-            if(scanBtn) {
-                scanBtn.addEventListener('click', () => {
-                    const username = usernameInput.value.trim();
-                    if (!username) { 
-                        usernameInput.style.borderColor = "red"; 
-                        return; 
-                    }
-                    
-                    // Animatie de start
-                    inputSection.style.opacity = '0';
-                    setTimeout(() => {
-                        inputSection.classList.add('hidden');
-                        terminalContainer.classList.remove('hidden');
-                        runTerminalSequence(username);
-                    }, 500);
-                });
-            }
+            const messages = [
+                { text: `> Resolving target: ${username}...`, color: "text-green-500" },
+                { text: "> Connection established (Secure Proxy US-East-1).", color: "text-gray-500" },
+                { text: "> Accessing Public Archives (Twitter, Instagram, Web)...", color: "text-white" },
+                { text: "> Scanning 2,104 historic items...", color: "text-gray-400" },
+                { text: "> [!] Analyzing sentiment patterns...", color: "text-blue-400" },
+                { text: `> WARNING: Flag detected in ${username}'s history (2019).`, color: "text-yellow-500" },
+                { text: "> CRITICAL: Hate Speech/Aggression keywords found.", color: "text-kred-red" },
+                { text: "> Generating Forensic Report...", color: "text-white" },
+                { text: ">> AUDIT LOCKED. PAYMENT REQUIRED.", color: "text-kred-red" }
+            ];
 
-            function runTerminalSequence(username) {
-                const messages = [
-                    { text: `> Resolving target: ${username}...`, color: "text-green-500" },
-                    { text: "> Connection established (Secure Proxy US-East-1).", color: "text-gray-500" },
-                    { text: "> Accessing Public Archives (Twitter, Instagram, Web)...", color: "text-white" },
-                    { text: "> Scanning 2,104 historic items...", color: "text-gray-400" },
-                    { text: "> [!] Analyzing sentiment patterns...", color: "text-blue-400" },
-                    { text: `> WARNING: Flag detected in ${username}'s history (2019).`, color: "text-yellow-500" },
-                    { text: "> CRITICAL: Hate Speech/Aggression keywords found.", color: "text-kred-red" },
-                    { text: "> Generating Forensic Report...", color: "text-white" },
-                    { text: ">> AUDIT LOCKED. PAYMENT REQUIRED.", color: "text-kred-red" }
-                ];
+            let lineIndex = 0;
 
-                let lineIndex = 0;
-
-                function typeWriter(text, element, color, callback) {
-                    let i = 0;
-                    element.className = color + ' terminal-line';
-                    const interval = setInterval(() => {
-                        if (i < text.length) {
-                            element.innerHTML = text.substring(0, i + 1);
-                            i++;
-                            // Auto scroll
-                            const container = terminalContainer.querySelector('div');
-                            if(container) container.scrollTop = container.scrollHeight;
-                        } else {
-                            clearInterval(interval);
-                            element.classList.remove('terminal-line');
-                            if (callback) callback();
-                        }
-                    }, 20);
-                }
-
-                function playMessages() {
-                    if (lineIndex < messages.length) {
-                        const p = document.createElement('p');
-                        terminal.appendChild(p);
-                        typeWriter(messages[lineIndex].text, p, messages[lineIndex].color, () => {
-                            lineIndex++;
-                            setTimeout(playMessages, 800);
-                        });
+            function typeWriter(text, element, color, callback) {
+                let i = 0;
+                element.className = color + ' terminal-line';
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.innerHTML = text.substring(0, i + 1);
+                        i++;
+                        // Auto scroll
+                        terminalContainer.querySelector('div').scrollTop = terminalContainer.querySelector('div').scrollHeight;
                     } else {
-                        setTimeout(() => {
-                            warningModal.classList.remove('hidden');
-                        }, 1000);
+                        clearInterval(interval);
+                        element.classList.remove('terminal-line');
+                        if (callback) callback();
                     }
-                }
-                playMessages();
+                }, 20);
             }
 
-            // --- LEGAL MODAL LOGIC ---
-            const legalModal = document.getElementById('legal-modal');
-            const legalTitle = document.getElementById('legal-title');
-            const legalBody = document.getElementById('legal-body');
-            
+            function playMessages() {
+                if (lineIndex < messages.length) {
+                    const p = document.createElement('p');
+                    terminal.appendChild(p);
+                    typeWriter(messages[lineIndex].text, p, messages[lineIndex].color, () => {
+                        lineIndex++;
+                        setTimeout(playMessages, 800);
+                    });
+                } else {
+                    setTimeout(() => {
+                        warningModal.classList.remove('hidden');
+                    }, 1000);
+                }
+            }
+            playMessages();
+        }
+
+        // --- LEGAL MODAL LOGIC (GLOBALA) ---
+        function openLegal(type) {
             const content = {
                 faq: `<h3>How does it work?</h3><p>We use AI-driven Open Source Intelligence (OSINT) tools to scan your public digital footprint across major social platforms and web archives.</p>
                       <h3>Is it anonymous?</h3><p>Yes. The target profile is never notified of the scan. Your data is encrypted and deleted after the report is generated.</p>
                       <h3>What do I get?</h3><p>You receive a comprehensive PDF Forensic Report detailing flagged posts, risk scores, and direct links to problematic content for remediation.</p>
-                      <h3>Turnaround time?</h3><p>Most reports are generated within 2-4 hours. Deep archive scans may take up to 12 hours.</p>`,
-                privacy: `<h3>Privacy Policy</h3><p>KRED Intelligence Inc. respects your privacy. We do not sell, trade, or rent users' personal identification information to others.</p>
-                          <h3>Data Usage</h3><p>The data collected (usernames) is used solely for the purpose of conducting the requested audit. All report data is purged from our servers 7 days after delivery.</p>`,
-                terms: `<h3>Terms of Service</h3><p>By using KRED, you agree that this tool is for personal reputation management or authorized employment screening only.</p>
-                        <h3>Disclaimer</h3><p>KRED is an informational tool. We do not guarantee employment outcomes. The "Risk Score" is an AI-generated metric based on corporate hiring standards.</p>
-                        <h3>Refunds</h3><p>Due to the digital nature of the service, refunds are only issued if a scan fails to complete.</p>`
-            };
-
-            function openLegal(type) {
-                legalTitle.innerText = type === 'faq' ? "FAQ" : (type === 'privacy' ? "PRIVACY POLICY" : "TERMS OF SERVICE");
-                legalBody.innerHTML = content[type];
-                legalModal.classList.remove('hidden');
-            }
-
-            function closeLegal() {
-                legalModal.classList.add('hidden');
-            }
-
-            // Event Listeners for Legal
-            document.getElementById('nav-faq-btn').addEventListener('click', () => openLegal('faq'));
-            document.getElementById('footer-faq').addEventListener('click', () => openLegal('faq'));
-            document.getElementById('footer-privacy').addEventListener('click', () => openLegal('privacy'));
-            document.getElementById('footer-terms').addEventListener('click', () => openLegal('terms'));
-            document.getElementById('close-legal-btn').addEventListener('click', closeLegal);
-            document.getElementById('close-legal-btn-2').addEventListener('click', closeLegal);
-        });
-    </script>
-</body>
-</html>
+                      <h3>Turnaround time?</h3><p>Most reports are
