@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRED. | Digital Reputation Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        'kred-bg': '#050505',
+                        'kred-blue': '#2563EB',
+                        'kred-red': '#EF4444',
+                        'kred-yellow': '#FBBF24',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'blink-cursor': 'blink 1s step-end infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        blink: {
+                            'from, to': { 'border-right-color': 'transparent' },
+                            '50%': { 'border-right-color': 'white' },
+                        },
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at 50% 0%, black, transparent 80%);
+        }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .btn-kred { background: white; color: black; font-weight: 800; letter-spacing: 1px; transition: all 0.3s ease; border: 1px solid white; }
+        .btn-kred:hover { background: transparent; color: white; box-shadow: 0 0 30px rgba(255, 255, 255, 0.1); }
+        .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
+        
+        /* Input Styling */
+        .kred-input {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            color: #00FF00; /* Hacker Green Text */
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .kred-input:focus { outline: none; border-color: white; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; padding: 1rem; animation: fadeIn 0.5s ease-out;
+        }
+        .modal-content {
+            background: #0A0A0A; border: 1px solid #333; width: 100%; max-width: 450px;
+            max-height: 90vh; overflow-y: auto; border-radius: 12px; position: relative;
+        }
+        .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.5); user-select: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="fixed inset-0 grid-bg z-[-1]"></div>
+
+    <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-black/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="text-xl font-black tracking-tighter font-sans text-white">KRED.</div>
+            <button class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition">Status: Online</button>
+        </div>
+    </nav>
+
+    <main class="min-h-screen flex flex-col justify-center items-center px-4 pt-16 relative">
+        
+        <h1 class="text-4xl md:text-7xl font-black text-center tracking-tighter leading-none mb-6">
+            OWN YOUR <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">REPUTATION.</span>
+        </h1>
+
+        <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12 transition-all duration-500">
+            <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
+            
+            <div class="relative">
+                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
+                <input type="text" id="username-input" placeholder="instagram_user or twitter_handle" 
+                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
+            </div>
+
+            <button onclick="startScan()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+                INITIATE SCAN
+            </button>
+            <p class="text-center text-[10px] text-gray-600 font-mono">SECURE CONNECTION • ANONYMOUS • ENCRYPTED</p>
+        </div>
+
+        <div id="terminal-container" class="hidden w-full max-w-2xl glass-panel rounded-xl overflow-hidden border-t border-white/10 shadow-2xl mb-20">
+            <div class="bg-black/60 px-4 py-2 flex gap-2 border-b border-white/5 items-center">
+                <div class="w-2 h-2 rounded-full bg-red-500/20"></div>
+                <div class="w-2 h-2 rounded-full bg-yellow-500/20"></div>
+                <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
+                <div class="ml-auto text-[9px] text-gray-600 font-mono">root@kred-core</div>
+            </div>
+            <div class="p-4 font-mono text-xs h-56 md:h-72 overflow-y-auto relative bg-black/40 scroll-smooth">
+                <div id="terminal-text" class="space-y-2 text-gray-400 pb-8"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="py-6 text-center border-t border-white/5 mt-auto w-full">
+        <p class="text-gray-800 text-[9px] font-mono uppercase tracking-widest">&copy; 2025 KRED INC.</p>
+    </footer>
+
+    <div id="warning-modal" class="modal-overlay hidden">
+        <div class="modal-content p-6">
+            <div class="flex flex-col items-center mb-5">
+                <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6 text-kred-red animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h2 class="text-xl font-black text-white text-center uppercase tracking-tight">Audit Complete</h2>
+                <p class="text-kred-red text-xs font-bold tracking-widest mt-1">CRITICAL RISKS DETECTED</p>
+            </div>
+
+            <p class="text-gray-400 text-xs text-center mb-6">
+                We identified <strong class="text-white">3 high-risk flags</strong> on <span id="target-user" class="text-kred-blue"></span>'s profile.
+            </p>
+
+            <a href="LINKUL_TAU_DE_LA_STRIPE_AICI" class="btn-kred w-full py-3 rounded-lg text-sm font-bold uppercase block text-center mb-6">
+                Unlock Full Report ($29)
+            </a>
+
+            <div class="bg-white/5 rounded border border-white/5 p-4">
+                <div class="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
+                    <span class="text-[10px] text-gray-500 uppercase font-mono">Preview Results</span>
+                    <span class="text-[10px] text-white font-bold bg-red-500/20 px-2 py-0.5 rounded">LOCKED</span>
+                </div>
+                <div class="mb-3">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Twitter (X)</span><span>2019</span></div>
+                    <div class="bg-black/50 p-2 rounded text-xs border-l-2 border-red-500 relative overflow-hidden">
+                        <span class="blur-text">Aggressive political language detected in thread</span>
+                        <div class="absolute inset-0 flex items-center justify-center"><span class="text-[9px] text-white/70 font-mono bg-black/80 px-2 py-1 rounded uppercase">Hidden Content</span></div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Instagram</span><span>2017</span></div>
+                    <div class="bg-black/50 p-2 rounded text-xs border-l-2 border-yellow-500 relative overflow-hidden">
+                        <span class="blur-text">Caption contains keywords regarding substance use</span>
+                        <div class="absolute inset-0 flex items-center justify-center"><span class="text-[9px] text-white/70 font-mono bg-black/80 px-2 py-1 rounded uppercase">Hidden Content</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANT: PUNE LINK-UL TAU DE STRIPE AICI
+        const STRIPE_LINK = "LINKUL_TAU_DE_LA_STRIPE_AICI";
+        document.querySelector('.modal-content a').href = STRIPE_LINK;
+
+        const inputSection = document.getElementById('input-section');
+        const terminalContainer = document.getElementById('terminal-container');
+        const terminal = document.getElementById('terminal-text');
+        const warningModal = document.getElementById('warning-modal');
+        const usernameInput = document.getElementById('username-input');
+        const targetUserDisplay = document.getElementById('target-user');
+
+        function startScan() {
+            const username = usernameInput.value.trim();
+            
+            if (!username) {
+                usernameInput.style.borderColor = "red";
+                return; // Nu porni daca e gol
+            }
+
+            // 1. Ascunde Input-ul
+            inputSection.style.opacity = '0';
+            setTimeout(() => {
+                inputSection.classList.add('hidden');
+                terminalContainer.classList.remove('hidden');
+                
+                // 2. Porneste Terminalul cu numele utilizatorului
+                runTerminalSequence(username);
+            }, 500);
+        }
+
+        function runTerminalSequence(username) {
+            targetUserDisplay.innerText = username; // Seteaza numele in Pop-up
+
+            const messages = [
+                { text: `> Resolving target: ${username}...`, color: "text-green-500" },
+                { text: "> Connection established (Secure Proxy US-East-1).", color: "text-gray-500" },
+                { text: "> Accessing Public Archives (Twitter, Instagram, Web)...", color: "text-white" },
+                { text: "> Scanning 2,104 historic items...", color: "text-gray-400" },
+                { text: "> [!] Analyzing sentiment patterns...", color: "text-blue-400" },
+                { text: `> WARNING: Flag detected in ${username}'s history (2019).`, color: "text-yellow-500" },
+                { text: "> CRITICAL: Hate Speech/Aggression keywords found.", color: "text-kred-red" },
+                { text: "> Generating Forensic Report...", color: "text-white" },
+                { text: ">> AUDIT LOCKED. PAYMENT REQUIRED.", color: "text-kred-red" }
+            ];
+
+            let lineIndex = 0;
+
+            function typeWriter(text, element, color, callback) {
+                let i = 0;
+                element.className = color + ' terminal-line';
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.innerHTML = text.substring(0, i + 1);
+                        i++;
+                        terminalContainer.querySelector('div').scrollTop = terminalContainer.querySelector('div').scrollHeight;
+                    } else {
+                        clearInterval(interval);
+                        element.classList.remove('terminal-line');
+                        if (callback) callback();
+                    }
+                }, 20);
+            }
+
+            function playMessages() {
+                if (lineIndex < messages.length) {
+                    const p = document.createElement('p');
+                    terminal.appendChild(p);
+                    typeWriter(messages[lineIndex].text, p, messages[lineIndex].color, () => {
+                        lineIndex++;
+                        setTimeout(playMessages, 800);
+                    });
+                } else {
+                    setTimeout(() => {
+                        warningModal.classList.remove('hidden');
+                        // Nu blocam scroll-ul pe mobile ca sa poata vedea tot popup-ul
+                    }, 1000);
+                }
+            }
+
+            playMessages();
+        }
+    </script>
+</body>
+</html>
