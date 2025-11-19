@@ -20,20 +20,14 @@
                         'kred-blue': '#2563EB',
                         'kred-red': '#EF4444',
                         'kred-yellow': '#FBBF24',
-                        'kred-gray': '#1F2937',
                     },
                     animation: {
                         'blink-cursor': 'blink 1s step-end infinite',
-                        'fade-in': 'fadeIn 0.3s ease-out',
                     },
                     keyframes: {
                         blink: {
                             'from, to': { 'border-right-color': 'transparent' },
                             '50%': { 'border-right-color': 'white' },
-                        },
-                        fadeIn: {
-                            'from': { opacity: '0' },
-                            'to': { opacity: '1' },
                         }
                     }
                 }
@@ -44,7 +38,6 @@
     <style>
         body { background-color: #050505; color: white; overflow-x: hidden; }
         
-        /* GRID BACKGROUND */
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background-size: 40px 40px;
@@ -53,15 +46,15 @@
             mask-image: radial-gradient(circle at 50% 0%, black, transparent 80%);
         }
         
-        /* UI ELEMENTS */
         .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 50; /* FORTAM CLICK-UL */
+            /* Z-INDEX URIS CA SA FIM SIGURI CA NIMIC NU IL ACOPERA */
+            position: relative; z-index: 9999; 
         }
-        .btn-kred:active { transform: scale(0.98); } /* EFECT CAND APESI */
+        .btn-kred:active { transform: scale(0.95); background: #ddd; } 
         
         .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
         
@@ -71,10 +64,9 @@
         }
         .kred-input:focus { outline: none; border-color: white; }
 
-        /* MODAL */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.95); z-index: 9999; 
+            background: rgba(0, 0, 0, 0.95); z-index: 99999; 
             display: flex; justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content { 
@@ -94,7 +86,7 @@
     <nav class="fixed w-full z-40 top-0 border-b border-white/5 bg-black/90 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="text-3xl md:text-4xl font-black tracking-tighter font-sans text-white">KRED.</div>
-            <button id="nav-faq" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
+            <button onclick="toggleModal('legal-modal')" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
                 FAQ
             </button>
         </div>
@@ -116,7 +108,7 @@
                     class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
             </div>
 
-            <button id="start-scan-btn" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+            <button onclick="FORCE_START()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
                 INITIATE SCAN
             </button>
             
@@ -146,8 +138,6 @@
                 <p class="text-gray-600 text-[10px] mt-1">&copy; 2025 KRED INTELLIGENCE INC.</p>
             </div>
             <div class="flex gap-6 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-                <button id="foot-privacy" class="hover:text-white">Privacy</button>
-                <button id="foot-terms" class="hover:text-white">Terms</button>
                 <a href="mailto:contact@kred.app" class="hover:text-white">Contact</a>
             </div>
         </div>
@@ -190,55 +180,49 @@
     <div id="legal-modal" class="modal-overlay hidden">
         <div class="modal-content p-8 bg-black border border-white/10">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h2 id="legal-title" class="text-xl font-bold text-white font-mono">LEGAL</h2>
-                <button id="close-legal" class="text-gray-500 hover:text-white text-xl">✕</button>
+                <h2 class="text-xl font-bold text-white font-mono">FAQ</h2>
+                <button onclick="toggleModal('legal-modal')" class="text-gray-500 hover:text-white text-xl">✕</button>
             </div>
-            <div id="legal-body" class="text-gray-400 text-xs leading-relaxed h-64 overflow-y-auto"></div>
-            <button id="close-legal-btn" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
+            <div class="text-gray-400 text-xs leading-relaxed">
+                <p class="mb-4"><b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.</p>
+                <p class="mb-4"><b>Is it anonymous?</b><br>Yes. The target is never notified.</p>
+                <p><b>Turnaround?</b><br>Reports are generated in 2-12 hours.</p>
+            </div>
+            <button onclick="toggleModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
         </div>
     </div>
 
     <script>
-        // --- LINKUL TAU DE STRIPE ---
-        const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
+        // --- CONFIGURARE LINK STRIPE ---
+        const STRIPE_LINK = "https://buy.stripe.com/test_14AfZgeHn0wWca786s4AU00";
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // --- ELEMENTE ---
-        const startBtn = document.getElementById('start-scan-btn');
-        const usernameInput = document.getElementById('username-input');
-        const inputSection = document.getElementById('input-section');
-        const terminalContainer = document.getElementById('terminal-container');
-        const terminal = document.getElementById('terminal-text');
-        const warningModal = document.getElementById('warning-modal');
+        // --- FUNCTIA GLOBALA DE START (ACUM E IN AFARA ORICARUI LISTENER) ---
+        function FORCE_START() {
+            const user = document.getElementById('username-input').value.trim();
+            
+            // Validare simpla
+            if (!user) {
+                document.getElementById('username-input').style.borderColor = "red";
+                document.getElementById('username-input').placeholder = "ENTER USERNAME";
+                return;
+            }
 
-        // --- ASCULTATOR DE EVENIMENTE (CEL MAI SIGUR MOD) ---
-        if (startBtn) {
-            startBtn.addEventListener('click', function() {
-                // 1. Luam username-ul
-                const user = usernameInput.value.trim();
-                
-                // 2. Verificam daca e gol
-                if (!user) {
-                    usernameInput.style.borderColor = "red";
-                    usernameInput.placeholder = "REQUIRED FIELD";
-                    return;
-                }
+            // Ascunde input
+            document.getElementById('input-section').style.display = 'none';
+            
+            // Arata terminal
+            document.getElementById('terminal-container').classList.remove('hidden');
 
-                // 3. Ascundem input-ul
-                inputSection.style.display = 'none';
-                
-                // 4. Aratam terminalul
-                terminalContainer.classList.remove('hidden');
-
-                // 5. Pornim secventa
-                runTerminal(user);
-            });
+            // Ruleaza animatia
+            runScript(user);
         }
 
-        function runTerminal(username) {
+        function runScript(username) {
+            const terminal = document.getElementById('terminal-text');
             const msgs = [
                 { t: `> Target resolved: ${username}`, c: "text-green-500" },
-                { t: "> Establishing secure tunnel (US-East)...", c: "text-gray-500" },
+                { t: "> Connection established (Secure Proxy US-East-1).", c: "text-gray-500" },
                 { t: "> Scraping public archives (2013-2025)...", c: "text-white" },
                 { t: "> [!] 142 items found in web cache.", c: "text-gray-400" },
                 { t: `> WARNING: High-risk keyword match in ${username}'s history.`, c: "text-yellow-500" },
@@ -248,67 +232,32 @@
             ];
 
             let i = 0;
-            
-            function printLine() {
+            function print() {
                 if (i >= msgs.length) {
-                    // GATA - Deschide Popup
                     setTimeout(() => {
-                        warningModal.classList.remove('hidden');
+                        document.getElementById('warning-modal').classList.remove('hidden');
                     }, 800);
                     return;
                 }
-
                 const p = document.createElement('p');
                 p.className = msgs[i].c + " terminal-line";
                 p.innerText = msgs[i].t;
                 terminal.appendChild(p);
-                
-                // Auto scroll
                 terminal.parentElement.scrollTop = terminal.parentElement.scrollHeight;
-
-                // Scoate cursorul de la linia anterioara
-                const prev = terminal.children[terminal.children.length - 2];
-                if(prev) prev.classList.remove('terminal-line');
-
                 i++;
-                setTimeout(printLine, 800); // Viteza dintre linii
+                setTimeout(print, 600);
             }
-
-            printLine();
+            print();
         }
 
-        // --- LEGAL MODALS ---
-        const legalModal = document.getElementById('legal-modal');
-        const legalTitle = document.getElementById('legal-title');
-        const legalBody = document.getElementById('legal-body');
-
-        function showLegal(type) {
-            let title = "INFO";
-            let text = "";
-            
-            if(type === 'faq') {
-                title = "FAQ";
-                text = "<b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.<br><br><b>Is it anonymous?</b><br>Yes. The target is never notified.<br><br><b>Turnaround?</b><br>Reports are generated in 2-12 hours.";
-            } else if(type === 'privacy') {
-                title = "PRIVACY";
-                text = "We do not sell your data. All search logs are purged after 7 days.";
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
             } else {
-                title = "TERMS";
-                text = "For informational purposes only. We do not guarantee employment outcomes.";
+                el.classList.add('hidden');
             }
-
-            legalTitle.innerText = title;
-            legalBody.innerHTML = text;
-            legalModal.classList.remove('hidden');
         }
-
-        document.getElementById('nav-faq').addEventListener('click', () => showLegal('faq'));
-        document.getElementById('foot-privacy').addEventListener('click', () => showLegal('privacy'));
-        document.getElementById('foot-terms').addEventListener('click', () => showLegal('terms'));
-        
-        document.getElementById('close-legal').addEventListener('click', () => legalModal.classList.add('hidden'));
-        document.getElementById('close-legal-btn').addEventListener('click', () => legalModal.classList.add('hidden'));
-
     </script>
 </body>
 </html>
