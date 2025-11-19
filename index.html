@@ -47,6 +47,7 @@
             cursor: pointer; text-transform: uppercase;
             transition: background 0.2s; -webkit-appearance: none;
         }
+        .btn-kred:hover { background: #e5e5e5; }
         .btn-kred:active { transform: scale(0.98); background: #ccc; }
 
         /* TERMINAL */
@@ -84,9 +85,9 @@
 
     <div class="fixed-bg"></div>
 
-    <div class="interactive-zone w-full border-b border-white/10 bg-black/90 backdrop-blur p-6 flex justify-between items-center fixed top-0">
+    <div class="interactive-zone w-full border-b border-white/10 bg-black/90 backdrop-blur p-6 flex justify-center md:justify-between items-center fixed top-0">
         <div class="text-3xl font-black tracking-tighter">KRED.</div>
-        <button onclick="openLegal('faq')" class="text-xs border border-white/30 px-4 py-2 rounded hover:bg-white hover:text-black transition cursor-pointer">FAQ</button>
+        <div class="hidden md:block w-10"></div>
     </div>
 
     <div class="interactive-zone min-h-screen flex flex-col justify-center items-center px-4 pt-20 pb-20">
@@ -239,13 +240,13 @@
         const legalContent = {
             faq: `<h3>How does it work?</h3><p>We use AI-driven OSINT tools to scan your public digital footprint across major social platforms and web archives.</p>
                   <h3>Is it anonymous?</h3><p>Yes. The target profile is never notified of the scan. Your data is encrypted and deleted after the report is generated.</p>
-                  <h3>Turnaround time?</h3><p>Most reports are generated within 2-4 hours. Deep archive scans may take up to 12 hours for manual verification.</p>`,
+                  <h3>Turnaround time?</h3><p>Our AI performs hyper-deep automated forensic research to ensure maximum result accuracy. This comprehensive process takes 6-12 hours to compile.</p>`,
             
             privacy: `<h3>Privacy Policy</h3><p>KRED Intelligence Inc. respects your privacy. We do not sell, trade, or rent users' personal identification information to others.</p>
                       <h3>Data Usage</h3><p>The data collected (usernames) is used solely for the purpose of conducting the requested audit. All report data is purged from our servers 7 days after delivery.</p>`,
             
             terms: `<h3>Terms of Service</h3><p>By using KRED, you agree that this tool is for personal reputation management or authorized employment screening only.</p>
-                    <h3>Disclaimer</h3><p>KRED is an informational tool. We do not guarantee employment outcomes.</p>
+                    <h3>Disclaimer</h3><p>KRED is an informational tool. We do not guarantee employment outcomes. The "Risk Score" is an AI-generated metric based on corporate hiring standards.</p>
                     <h3>Refunds</h3><p>Refunds are only issued if a scan fails to complete due to technical errors.</p>`
         };
 
