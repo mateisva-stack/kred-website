@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRED. | Digital Reputation Audit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        'kred-bg': '#050505',
+                        'kred-blue': '#2563EB',
+                        'kred-red': '#EF4444', /* Roșu pentru alerte */
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'blink-cursor': 'blink 1s step-end infinite',
+                    },
+                    keyframes: {
+                        blink: {
+                            'from, to': { 'border-right-color': 'transparent' },
+                            '50%': { 'border-right-color': 'white' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        /* Cyber Grid Background */
+        .grid-bg {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at 50% 0%, black, transparent 80%);
+        }
+
+        /* Glass Panels */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Premium Button */
+        .btn-kred {
+            background: white;
+            color: black;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 1px solid white;
+        }
+        .btn-kred:hover {
+            background: transparent;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Terminal Cursor */
+        .terminal-line {
+            border-right: 2px solid white;
+            animation: blink-cursor 1s step-end infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            width: fit-content;
+            padding-right: 5px; /* Spațiu pentru cursor */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="fixed inset-0 grid-bg z-[-1]"></div>
+
+    <nav class="fixed w-full z-50 top-0 border-b border-white/5 bg-black/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="text-2xl font-black tracking-tighter font-sans text-white">KRED.</div>
+            <div class="hidden md:flex gap-8 text-xs text-gray-400 font-mono uppercase tracking-widest">
+                <a href="#" class="hover:text-white transition">Protocol</a>
+                <a href="#" class="hover:text-white transition">Security</a>
+            </div>
+            <button class="text-xs border border-white/20 px-5 py-2 rounded font-mono uppercase hover:bg-white hover:text-black transition">
+                Client Login
+            </button>
+        </div>
+    </nav>
+
+    <main class="min-h-screen flex flex-col justify-center items-center px-4 pt-10 relative">
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-gray-400 text-[10px] font-mono uppercase tracking-widest mb-8">
+            <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            AI Systems Operational
+        </div>
+
+        <h1 class="text-5xl md:text-8xl font-black text-center tracking-tighter leading-none mb-6">
+            OWN YOUR <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">REPUTATION.</span>
+        </h1>
+
+        <p class="text-gray-400 text-lg text-center max-w-xl mb-12 font-light leading-relaxed">
+            70% of employers check your social media.<br>
+            <strong>KRED.</strong> audits your digital past before it costs you a future.
+        </p>
+        
+        <div class="w-full max-w-2xl glass-panel rounded-xl overflow-hidden border-t border-white/10 shadow-2xl mb-12">
+            <div class="bg-black/60 px-4 py-3 flex gap-2 border-b border-white/5 items-center">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500/20"></div>
+                <div class="ml-4 text-[10px] text-gray-600 font-mono">root@kred-audit:~</div>
+            </div>
+            <div class="p-6 font-mono text-sm md:text-base h-64 overflow-hidden relative bg-black/40">
+                <div id="terminal-text" class="space-y-3 text-gray-400">
+                    <p class="terminal-line">> Initializing deep scan protocol...</p>
+                </div>
+                <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-black/40 to-transparent"></div>
+            </div>
+        </div>
+        <div class="flex flex-col w-full max-w-xs gap-4">
+            <a href="https://buy.stripe.com/test_dR6dTycu1912gIM000" class="btn-kred w-full py-4 rounded-lg text-xs uppercase block text-center flex items-center justify-center">
+                Start Forensic Audit ($29)
+            </a>
+            <p class="text-center text-[10px] text-gray-600 font-mono">SECURE SCAN: TWITTER • INSTAGRAM • WEB</p>
+        </div>
+
+    </main>
+
+    <footer class="py-8 text-center border-t border-white/5 mt-auto w-full">
+        <p class="text-gray-800 text-[10px] font-mono uppercase tracking-widest">&copy; 2025 KRED INTELLIGENCE INC.</p>
+    </footer>
+
+    <script>
+        const terminal = document.getElementById('terminal-text');
+        const messages = [
+            { text: "> Establishing encrypted connection...", color: "text-green-500" },
+            { text: "> Target profile analysis initiated.", color: "text-white" },
+            { text: "> Scanning 7,421 archived posts...", color: "text-gray-400" },
+            { text: "> Potential risk identified: 2017/04/12 - Instagram (Language)", color: "text-yellow-500" },
+            { text: "> WARNING: Hate Speech Flag (Severity: High) - 2019/08/23 - Twitter/X", color: "text-kred-red" },
+            { text: "> Compiling comprehensive KRED. Audit Report...", color: "text-white" }
+        ];
+
+        let delay = 1000;
+        let lineIndex = 0;
+
+        function typeWriter(text, element, color, callback) {
+            let i = 0;
+            element.className = color + ' terminal-line'; // Adaugă clasa pentru cursor
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    element.innerHTML = text.substring(0, i + 1);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    element.classList.remove('terminal-line'); // Scoate cursorul când s-a terminat de scris
+                    if (callback) callback();
+                }
+            }, 50); // Viteza de scriere
+        }
+
+        function playMessages() {
+            if (lineIndex < messages.length) {
+                const p = document.createElement('p');
+                terminal.appendChild(p);
+                typeWriter(messages[lineIndex].text, p, messages[lineIndex].color, () => {
+                    terminal.scrollTop = terminal.scrollHeight; // Scroll automat
+                    lineIndex++;
+                    setTimeout(playMessages, 1500); // Pauză între mesaje
+                });
+            }
+        }
+
+        setTimeout(() => {
+            document.querySelector('.terminal-line').classList.remove('terminal-line'); // Scoate cursorul de la primul mesaj static
+            playMessages();
+        }, 2000); // Începe animația după un delay
+    </script>
+</body>
+</html>
