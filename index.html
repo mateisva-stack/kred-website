@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KRED. | Digital Reputation Audit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -37,7 +37,8 @@
     </script>
 
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; }
+        body { background-color: #050505; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        input, button { -webkit-appearance: none; border-radius: 0; }
         
         .grid-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
@@ -49,28 +50,26 @@
         
         .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         
-        /* BUTON STABIL */
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 50; 
-            -webkit-appearance: none; /* Fix pentru iPhone */
+            position: relative; z-index: 9999; 
         }
-        .btn-kred:active { transform: scale(0.95); background: #ddd; } 
+        .btn-kred:active { transform: scale(0.96); opacity: 0.9; }
         
         .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
         
         .kred-input { 
             background: rgba(0,0,0,0.6); border: 1px solid #333; color: #00FF00; 
             font-family: 'JetBrains Mono', monospace; z-index: 50; position: relative;
-            -webkit-appearance: none; border-radius: 0; /* Fix iPhone */
         }
         .kred-input:focus { outline: none; border-color: white; }
 
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.95); z-index: 9999; 
-            display: flex; justify-content: center; align-items: center; padding: 1rem;
+            background: rgba(0, 0, 0, 0.95); z-index: 99999; 
+            display: none; /* Ascuns initial */
+            justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content { 
             background: #0A0A0A; border: 1px solid #2563EB; 
@@ -78,8 +77,6 @@
             border-radius: 12px; position: relative; box-shadow: 0 0 50px rgba(37, 99, 235, 0.2);
         }
         .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.6); user-select: none; filter: blur(3px); }
-        
-        .hidden { display: none !important; }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -89,7 +86,7 @@
     <nav class="fixed w-full z-40 top-0 border-b border-white/5 bg-black/90 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="text-3xl md:text-4xl font-black tracking-tighter font-sans text-white">KRED.</div>
-            <button onclick="toggleModal('legal-modal')" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
+            <button onclick="openModal('legal-modal')" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
                 FAQ
             </button>
         </div>
@@ -105,15 +102,18 @@
         <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12">
             <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
             
-            <div class="relative">
-                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
-                <input type="text" id="username-input" placeholder="instagram_user" 
-                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
-            </div>
+            <form id="scan-form" onsubmit="event.preventDefault(); startScan();" class="w-full flex flex-col gap-4">
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
+                    <input type="text" id="username-input" placeholder="instagram_user" 
+                        class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest"
+                        autocomplete="off" autocorrect="off" autocapitalize="none">
+                </div>
 
-            <button onclick="startScan()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
-                INITIATE SCAN
-            </button>
+                <button type="submit" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+                    INITIATE SCAN
+                </button>
+            </form>
             
             <p class="text-center text-xs md:text-sm text-gray-400 font-mono font-bold tracking-widest mt-2">
                 SECURE CONNECTION • ANONYMOUS • ENCRYPTED
@@ -127,7 +127,7 @@
                 <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
                 <div class="ml-auto text-[9px] text-gray-600 font-mono">root@kred-core</div>
             </div>
-            <div class="p-4 font-mono text-xs h-64 overflow-y-auto relative bg-black/40">
+            <div class="p-4 font-mono text-xs h-64 overflow-y-auto relative bg-black/40" id="terminal-scroll">
                 <div id="terminal-text" class="space-y-2 text-gray-400 pb-10"></div>
             </div>
         </div>
@@ -146,7 +146,7 @@
         </div>
     </footer>
 
-    <div id="warning-modal" class="modal-overlay hidden">
+    <div id="warning-modal" class="modal-overlay">
         <div class="modal-content p-6">
             <div class="flex flex-col items-center mb-5">
                 <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
@@ -190,85 +190,93 @@
         </div>
     </div>
 
-    <div id="legal-modal" class="modal-overlay hidden">
+    <div id="legal-modal" class="modal-overlay">
         <div class="modal-content p-8 bg-black border border-white/10">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
                 <h2 class="text-xl font-bold text-white font-mono">FAQ</h2>
-                <button onclick="toggleModal('legal-modal')" class="text-gray-500 hover:text-white text-xl">✕</button>
+                <button onclick="closeModal('legal-modal')" class="text-gray-500 hover:text-white text-xl">✕</button>
             </div>
             <div class="text-gray-400 text-xs leading-relaxed">
                 <p class="mb-4"><b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.</p>
                 <p class="mb-4"><b>Is it anonymous?</b><br>Yes. The target is never notified.</p>
                 <p><b>Turnaround?</b><br>To ensure accuracy, reports are finalized in 2-12 hours.</p>
             </div>
-            <button onclick="toggleModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
+            <button onclick="closeModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURARE LINK STRIPE ---
+        // --- PUNE LINK-UL TAU AICI ---
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // --- FUNCTIA GLOBALA (SIMPLA SI SIGURA) ---
         function startScan() {
-            const userField = document.getElementById('username-input');
-            const user = userField.value.trim();
+            var userField = document.getElementById('username-input');
+            var inputSection = document.getElementById('input-section');
+            var terminalContainer = document.getElementById('terminal-container');
             
-            // Fix iPhone: Ascunde tastatura
+            var user = userField.value.trim();
+            
+            // Ascundem tastatura pe mobil
             userField.blur();
 
             if (!user) {
                 userField.style.borderColor = "red";
-                userField.placeholder = "ENTER USERNAME";
+                userField.placeholder = "REQUIRED";
                 return;
             }
 
-            document.getElementById('input-section').style.display = 'none';
-            document.getElementById('terminal-container').classList.remove('hidden');
+            // Schimbam ecranele (folosind style.display e cel mai sigur)
+            inputSection.style.display = 'none';
+            terminalContainer.style.display = 'block'; // Aratam terminalul
+            terminalContainer.classList.remove('hidden'); // Si scoatem clasa hidden
+
             runScript(user);
         }
 
         function runScript(username) {
-            const terminal = document.getElementById('terminal-text');
-            const msgs = [
-                { t: `> Target acquired: ${username}`, c: "text-kred-green" },
+            var terminal = document.getElementById('terminal-text');
+            var msgs = [
+                { t: "> Target acquired: " + username, c: "text-kred-green" },
                 { t: "> Establishing secure tunnel...", c: "text-gray-500" },
                 { t: "> Searching public archives (Twitter/X, Instagram)...", c: "text-white" },
                 { t: "> [!] 2,104 raw data points located.", c: "text-kred-blue" },
-                { t: `> Cross-referencing risk patterns...`, c: "text-gray-400" },
-                { t: `> Data capture: COMPLETE.`, c: "text-kred-green" },
+                { t: "> Cross-referencing risk patterns...", c: "text-gray-400" },
+                { t: "> Data capture: COMPLETE.", c: "text-kred-green" },
                 { t: "> Initializing Forensic AI Engine...", c: "text-white" },
                 { t: "> Awaiting authorization to proceed...", c: "text-white" },
                 { t: ">> PROCESS PAUSED. PAYMENT REQUIRED.", c: "text-kred-yellow" }
             ];
 
-            let i = 0;
+            var i = 0;
             function print() {
                 if (i >= msgs.length) {
-                    setTimeout(() => {
-                        document.getElementById('warning-modal').classList.remove('hidden');
+                    setTimeout(function() {
+                        document.getElementById('warning-modal').style.display = 'flex';
                     }, 800);
                     return;
                 }
-                const p = document.createElement('p');
+                var p = document.createElement('p');
                 p.className = msgs[i].c + " terminal-line";
                 p.innerText = msgs[i].t;
                 terminal.appendChild(p);
-                terminal.parentElement.scrollTop = terminal.parentElement.scrollHeight;
+                
+                // Scroll la fund
+                var scrollArea = document.getElementById('terminal-scroll');
+                scrollArea.scrollTop = scrollArea.scrollHeight;
+                
                 i++;
                 setTimeout(print, 600);
             }
             print();
         }
 
-        function toggleModal(id) {
-            const el = document.getElementById(id);
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-            } else {
-                el.classList.add('hidden');
-            }
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
         }
     </script>
 </body>
