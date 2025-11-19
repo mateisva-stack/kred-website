@@ -49,10 +49,12 @@
         
         .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         
+        /* BUTON STABIL */
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 9999; /* FORTAM CLICK-UL */
+            position: relative; z-index: 50; 
+            -webkit-appearance: none; /* Fix pentru iPhone */
         }
         .btn-kred:active { transform: scale(0.95); background: #ddd; } 
         
@@ -61,12 +63,13 @@
         .kred-input { 
             background: rgba(0,0,0,0.6); border: 1px solid #333; color: #00FF00; 
             font-family: 'JetBrains Mono', monospace; z-index: 50; position: relative;
+            -webkit-appearance: none; border-radius: 0; /* Fix iPhone */
         }
         .kred-input:focus { outline: none; border-color: white; }
 
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.95); z-index: 99999; 
+            background: rgba(0, 0, 0, 0.95); z-index: 9999; 
             display: flex; justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content { 
@@ -108,7 +111,7 @@
                     class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
             </div>
 
-            <button onclick="FORCE_START()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+            <button onclick="startScan()" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
                 INITIATE SCAN
             </button>
             
@@ -207,12 +210,12 @@
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // --- MECANISMUL NUCLEAR (FARA ASCULTATORI COMPLICATI) ---
-        function FORCE_START() {
+        // --- FUNCTIA GLOBALA (SIMPLA SI SIGURA) ---
+        function startScan() {
             const userField = document.getElementById('username-input');
             const user = userField.value.trim();
             
-            // Inchide tastatura fortat
+            // Fix iPhone: Ascunde tastatura
             userField.blur();
 
             if (!user) {
