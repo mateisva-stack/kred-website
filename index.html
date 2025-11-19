@@ -2,326 +2,210 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KRED. | Digital Reputation Audit</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        'kred-bg': '#050505',
-                        'kred-blue': '#2563EB',
-                        'kred-red': '#EF4444',
-                        'kred-yellow': '#FBBF24',
-                        'kred-green': '#10B981',
-                    },
-                    animation: {
-                        'blink-cursor': 'blink 1s step-end infinite',
-                    },
-                    keyframes: {
-                        blink: {
-                            'from, to': { 'border-right-color': 'transparent' },
-                            '50%': { 'border-right-color': 'white' },
-                        }
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { 'kred-black': '#050505', 'kred-blue': '#2563EB', 'kred-red': '#DC2626' }
                 }
             }
         }
     </script>
 
     <style>
-        body { background-color: #050505; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        input, button { -webkit-appearance: none; border-radius: 0; }
+        body { background-color: #050505; color: white; overflow-x: hidden; }
         
-        .grid-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        /* Fundalul fixat in spate */
+        .fixed-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
             background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             mask-image: radial-gradient(circle at 50% 0%, black, transparent 80%);
+            pointer-events: none; /* IMPORTANT: Click-ul trece prin fundal */
         }
-        
-        .glass-panel { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        
-        .btn-kred { 
-            background: white; color: black; font-weight: 900; letter-spacing: 1px; 
-            transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 50; 
-        }
-        .btn-kred:active { transform: scale(0.96); opacity: 0.9; background: #ddd; }
-        
-        .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
-        
-        .kred-input { 
-            background: rgba(0,0,0,0.6); border: 1px solid #333; color: #00FF00; 
-            font-family: 'JetBrains Mono', monospace; z-index: 50; position: relative;
-        }
-        .kred-input:focus { outline: none; border-color: white; }
 
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.95); z-index: 99999; 
-            display: none; justify-content: center; align-items: center; padding: 1rem;
+        /* Zona Interactiva - Z-Index MARE */
+        .interactive-zone {
+            position: relative; z-index: 50;
         }
-        .modal-content { 
-            background: #0A0A0A; border: 1px solid #2563EB; 
-            width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
-            border-radius: 12px; position: relative; box-shadow: 0 0 50px rgba(37, 99, 235, 0.2);
+
+        .kred-input {
+            background: rgba(0,0,0,0.8); border: 1px solid #333; color: #00FF00;
+            font-family: 'JetBrains Mono', monospace; width: 100%; padding: 15px;
+            border-radius: 8px; outline: none; text-transform: uppercase;
         }
-        .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.6); user-select: none; filter: blur(3px); }
-        
-        .legal-text h3 { color: white; font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
-        .legal-text p { color: #9CA3AF; font-size: 0.8rem; margin-bottom: 0.5rem; line-height: 1.4; }
-        
-        .hidden { display: none !important; }
+
+        .btn-kred {
+            background: white; color: black; font-weight: 900; letter-spacing: 2px;
+            width: 100%; padding: 15px; border-radius: 8px; border: none;
+            cursor: pointer; text-transform: uppercase;
+            transition: background 0.2s;
+        }
+        .btn-kred:hover { background: #e5e5e5; }
+        .btn-kred:active { transform: scale(0.98); }
+
+        /* Terminal */
+        .terminal-box {
+            background: rgba(0, 0, 0, 0.6); border-top: 1px solid #333;
+            font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            height: 300px; overflow-y: auto; padding: 20px;
+            display: none; /* Ascuns initial */
+        }
+        .line { margin-bottom: 8px; border-right: 2px solid white; display: inline-block; animation: blink 1s infinite; }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 100;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: #000; border: 1px solid #2563EB; padding: 30px;
+            border-radius: 12px; max-width: 400px; width: 100%; text-align: center;
+            box-shadow: 0 0 50px rgba(37, 99, 235, 0.3);
+        }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body>
 
-    <div class="grid-bg"></div>
+    <div class="fixed-bg"></div>
 
-    <nav class="fixed w-full z-40 top-0 border-b border-white/5 bg-black/90 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="text-3xl md:text-4xl font-black tracking-tighter font-sans text-white">KRED.</div>
-            <button id="nav-faq-btn" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
-                FAQ
-            </button>
-        </div>
-    </nav>
+    <div class="interactive-zone w-full border-b border-white/10 bg-black/90 backdrop-blur p-6 flex justify-between items-center fixed top-0">
+        <div class="text-3xl font-black tracking-tighter">KRED.</div>
+        <button onclick="document.getElementById('faq-modal').style.display='flex'" class="text-xs border border-white/30 px-4 py-2 rounded hover:bg-white hover:text-black transition">FAQ</button>
+    </div>
 
-    <main class="flex-grow flex flex-col justify-center items-center px-4 pt-24 relative">
+    <div class="interactive-zone min-h-screen flex flex-col justify-center items-center px-4 pt-20">
         
-        <h1 class="text-4xl md:text-7xl font-black text-center tracking-tighter leading-none mb-8">
-            OWN YOUR <br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600">REPUTATION.</span>
+        <h1 class="text-5xl md:text-7xl font-black text-center mb-8 tracking-tighter">
+            OWN YOUR <br><span class="text-gray-600">REPUTATION.</span>
         </h1>
 
-        <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12">
-            <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
+        <div id="input-area" class="w-full max-w-md space-y-4">
+            <p class="text-center text-gray-400 text-sm">Enter target username:</p>
             
-            <div class="relative">
-                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
-                <input type="text" id="username-input" placeholder="instagram_user" 
-                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
-            </div>
-
-            <button id="scan-btn" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+            <input type="text" id="username" class="kred-input" placeholder="INSTAGRAM_USER">
+            
+            <button type="button" onclick="runScan()" class="btn-kred">
                 INITIATE SCAN
             </button>
+
+            <p class="text-center text-xs text-gray-600 font-mono pt-4">SECURE • ANONYMOUS • ENCRYPTED</p>
+        </div>
+
+        <div id="terminal-area" class="w-full max-w-2xl mt-8 hidden">
+            <div class="bg-black border border-white/10 rounded-t-lg p-2 flex gap-2 items-center">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <span class="text-xs text-gray-500 ml-2 font-mono">root@kred-core</span>
+            </div>
+            <div id="console-output" class="terminal-box rounded-b-lg block bg-black/50"></div>
+        </div>
+
+    </div>
+
+    <div class="interactive-zone py-8 text-center border-t border-white/10 bg-black">
+        <p class="text-gray-600 text-xs">&copy; 2025 KRED INTELLIGENCE INC.</p>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="text-2xl font-black text-white mb-2">ARCHIVES LOCATED</h2>
+            <p class="text-blue-500 text-xs font-bold tracking-widest mb-6">READY FOR ANALYSIS</p>
             
-            <p class="text-center text-xs md:text-sm text-gray-400 font-mono font-bold tracking-widest mt-2">
-                SECURE CONNECTION • ANONYMOUS • ENCRYPTED
-            </p>
-        </div>
-
-        <div id="terminal-container" class="hidden w-full max-w-2xl glass-panel rounded-xl overflow-hidden border-t border-white/10 shadow-2xl mb-20">
-            <div class="bg-black/60 px-4 py-2 flex gap-2 border-b border-white/5 items-center">
-                <div class="w-2 h-2 rounded-full bg-red-500/20"></div>
-                <div class="w-2 h-2 rounded-full bg-yellow-500/20"></div>
-                <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
-                <div class="ml-auto text-[9px] text-gray-600 font-mono">root@kred-core</div>
-            </div>
-            <div id="terminal-scroll" class="p-4 font-mono text-xs h-64 overflow-y-auto relative bg-black/40">
-                <div id="terminal-text" class="space-y-2 text-gray-400 pb-10"></div>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="py-8 border-t border-white/5 bg-black w-full mt-auto z-10">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-left">
-                <span class="text-xl font-black text-white tracking-tighter">KRED.</span>
-                <p class="text-gray-600 text-[10px] mt-1">&copy; 2025 KRED INTELLIGENCE INC.</p>
-            </div>
-            <div class="flex gap-6 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-                <button id="foot-privacy" class="hover:text-white">Privacy</button>
-                <button id="foot-terms" class="hover:text-white">Terms</button>
-                <button id="foot-faq" class="hover:text-white">FAQ</button>
-                <a href="mailto:kred.security@proton.me" class="hover:text-white">Contact</a>
-            </div>
-        </div>
-    </footer>
-
-    <div id="warning-modal" class="modal-overlay">
-        <div class="modal-content p-6">
-            <div class="flex flex-col items-center mb-5">
-                <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
-                    <svg class="w-6 h-6 text-blue-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </div>
-                <h2 class="text-xl font-black text-white text-center uppercase tracking-tight">ARCHIVES LOCATED</h2>
-                <p class="text-blue-500 text-xs font-bold tracking-widest mt-1">READY FOR ANALYSIS</p>
-            </div>
-
-            <p class="text-gray-400 text-xs text-center mb-6 leading-relaxed">
-                We have successfully identified the target's digital footprint. 
-                To proceed with the <strong>Deep Forensic Analysis</strong> and generate your PDF report (delivered in 6-12h), authorization is required.
+            <p class="text-gray-400 text-sm mb-8">
+                Digital footprint identified. To generate the Deep Forensic Report (PDF), authorization is required.
             </p>
 
-            <a id="stripe-btn" href="#" class="btn-kred w-full py-4 rounded-lg text-sm font-bold uppercase block text-center mb-6 hover:bg-gray-200">
-                Authorize & Start Audit ($29)
+            <a id="stripe-btn" href="#" class="btn-kred block no-underline text-black hover:bg-gray-200">
+                Authorize Audit ($29)
             </a>
-
-            <div class="bg-white/5 rounded border border-white/5 p-4">
-                <div class="flex justify-between items-center mb-3 border-b border-white/5 pb-2">
-                    <span class="text-[10px] text-gray-500 uppercase font-mono">Scan Queue Status</span>
-                    <span class="text-[10px] text-white font-bold bg-yellow-500/20 px-2 py-0.5 rounded">PAUSED</span>
-                </div>
-                
-                <div class="mb-3">
-                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Data Collection</span></div>
-                    <div class="w-full bg-gray-800 rounded-full h-1.5 mb-1">
-                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
-                    </div>
-                    <div class="text-[9px] text-green-500 text-right">Complete</div>
-                </div>
-                
-                <div class="mb-2">
-                    <div class="flex justify-between text-[10px] text-gray-400 mb-1"><span>Forensic Analysis</span></div>
-                    <div class="w-full bg-gray-800 rounded-full h-1.5 mb-1">
-                        <div class="bg-blue-500 h-1.5 rounded-full animate-pulse" style="width: 5%"></div>
-                    </div>
-                    <div class="text-[9px] text-blue-400 text-right">Waiting for Authorization...</div>
-                </div>
-            </div>
         </div>
     </div>
 
-    <div id="legal-modal" class="modal-overlay">
-        <div class="modal-content p-8 bg-black border border-white/10">
-            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h2 id="legal-title" class="text-xl font-bold text-white font-mono">LEGAL</h2>
-                <button id="close-legal-x" class="text-gray-500 hover:text-white text-xl">✕</button>
+    <div id="faq-modal" class="modal-overlay">
+        <div class="modal-box border-white/20">
+            <h2 class="text-xl font-bold mb-4">FAQ</h2>
+            <div class="text-left text-gray-400 text-xs space-y-4">
+                <p><strong>How it works:</strong><br>AI-driven OSINT scanning of public digital footprints.</p>
+                <p><strong>Turnaround:</strong><br>Reports generated in 6-12 hours for accuracy.</p>
             </div>
-            <div id="legal-body" class="legal-text text-left h-64 overflow-y-auto pr-2"></div>
-            <button id="close-legal-btn" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
+            <button onclick="document.getElementById('faq-modal').style.display='none'" class="mt-6 w-full py-2 bg-white/10 text-white rounded text-xs uppercase">Close</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURARE LINK STRIPE ---
-        const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
-        
-        // Asteptam sa se incarce pagina
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('stripe-btn').href = STRIPE_LINK;
+        // LINK STRIPE
+        const STRIPE_LINK = "https://buy.stripe.com/test_14AfZgeHn0wWca786s4AU00";
+        document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-            // === LOGICA SCANARE ===
-            const scanBtn = document.getElementById('scan-btn');
-            
-            // Functia de start
-            function triggerScan() {
-                const userField = document.getElementById('username-input');
-                const user = userField.value.trim();
-                
-                userField.blur(); // Ascunde tastatura
+        function runScan() {
+            // 1. Get elements
+            var userInp = document.getElementById('username');
+            var user = userInp.value.trim();
+            var inputArea = document.getElementById('input-area');
+            var termArea = document.getElementById('terminal-area');
+            var consoleOut = document.getElementById('console-output');
 
-                if (!user) {
-                    userField.style.borderColor = "red";
-                    userField.placeholder = "REQUIRED";
+            // 2. Validation
+            if(!user) {
+                userInp.style.borderColor = "red";
+                userInp.placeholder = "REQUIRED";
+                return;
+            }
+
+            // 3. UI Switch
+            inputArea.style.display = 'none';
+            termArea.style.display = 'block';
+            consoleOut.style.display = 'block';
+
+            // 4. Run Text Sequence
+            var lines = [
+                {t: "> Target acquired: " + user, c: "text-green-500"},
+                {t: "> Establishing secure tunnel...", c: "text-gray-500"},
+                {t: "> Searching archives (Twitter/X, Instagram)...", c: "text-white"},
+                {t: "> [!] 2,104 raw items located.", c: "text-blue-500"},
+                {t: "> Analyzing risk patterns...", c: "text-gray-400"},
+                {t: "> Data capture: COMPLETE.", c: "text-green-500"},
+                {t: "> Initializing AI Forensic Engine...", c: "text-white"},
+                {t: ">> PAUSED. AUTHORIZATION REQUIRED.", c: "text-yellow-500"}
+            ];
+
+            var i = 0;
+            function print() {
+                if(i >= lines.length) {
+                    setTimeout(function(){
+                        document.getElementById('success-modal').style.display = 'flex';
+                    }, 1000);
                     return;
                 }
-
-                document.getElementById('input-section').style.display = 'none';
-                const terminal = document.getElementById('terminal-container');
-                terminal.classList.remove('hidden');
-                terminal.style.display = 'block';
                 
-                runScript(user);
-            }
-
-            // ASCULTATOR CLICK (PC)
-            scanBtn.addEventListener('click', triggerScan);
-            // ASCULTATOR TOUCH (MOBILE)
-            scanBtn.addEventListener('touchend', (e) => {
-                e.preventDefault(); // Previne dublu click
-                triggerScan();
-            });
-
-            function runScript(username) {
-                const terminalText = document.getElementById('terminal-text');
-                const msgs = [
-                    { t: `> Target acquired: ${username}`, c: "text-kred-green" },
-                    { t: "> Establishing secure tunnel...", c: "text-gray-500" },
-                    { t: "> Searching public archives (Twitter/X, Instagram)...", c: "text-white" },
-                    { t: "> [!] 2,104 raw data points located.", c: "text-kred-blue" },
-                    { t: `> Cross-referencing risk patterns...`, c: "text-gray-400" },
-                    { t: `> Data capture: COMPLETE.`, c: "text-kred-green" },
-                    { t: "> Initializing Forensic AI Engine...", c: "text-white" },
-                    { t: "> Awaiting authorization to proceed...", c: "text-white" },
-                    { t: ">> PROCESS PAUSED. PAYMENT REQUIRED.", c: "text-kred-yellow" }
-                ];
-
-                let i = 0;
-                function print() {
-                    if (i >= msgs.length) {
-                        setTimeout(() => {
-                            const modal = document.getElementById('warning-modal');
-                            modal.classList.remove('hidden');
-                            modal.style.display = 'flex';
-                        }, 800);
-                        return;
-                    }
-                    const p = document.createElement('p');
-                    p.className = msgs[i].c + " terminal-line";
-                    p.innerText = msgs[i].t;
-                    terminalText.appendChild(p);
-                    
-                    // Scroll
-                    const scrollArea = document.getElementById('terminal-scroll');
-                    if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
-                    
-                    i++;
-                    setTimeout(print, 600);
+                var p = document.createElement('div');
+                p.className = "line " + lines[i].c;
+                p.innerText = lines[i].t;
+                consoleOut.appendChild(p);
+                consoleOut.scrollTop = consoleOut.scrollHeight;
+                
+                // Remove blink from previous
+                if(i > 0) {
+                    consoleOut.children[i-1].style.borderRight = "none";
+                    consoleOut.children[i-1].style.animation = "none";
                 }
-                print();
+
+                i++;
+                setTimeout(print, 700);
             }
-
-            // === LOGICA LEGAL / FAQ ===
-            const legalModal = document.getElementById('legal-modal');
-            const legalTitle = document.getElementById('legal-title');
-            const legalBody = document.getElementById('legal-body');
-
-            const content = {
-                faq: `<h3>How does it work?</h3><p>We use AI-driven OSINT tools to scan your public digital footprint across major social platforms and web archives.</p>
-                      <h3>Is it anonymous?</h3><p>Yes. The target profile is never notified of the scan. Your data is encrypted and deleted after the report is generated.</p>
-                      <h3>What do I get?</h3><p>You receive a comprehensive PDF Forensic Report detailing flagged posts, risk scores, and direct links to problematic content for remediation.</p>
-                      <h3>Turnaround time?</h3><p>Most reports are generated within 2-4 hours. Deep archive scans may take up to 12 hours.</p>`,
-                privacy: `<h3>Privacy Policy</h3><p>KRED Intelligence Inc. respects your privacy. We do not sell, trade, or rent users' personal identification information to others.</p>
-                          <h3>Data Usage</h3><p>The data collected (usernames) is used solely for the purpose of conducting the requested audit. All report data is purged from our servers 7 days after delivery.</p>`,
-                terms: `<h3>Terms of Service</h3><p>By using KRED, you agree that this tool is for personal reputation management or authorized employment screening only.</p>
-                        <h3>Disclaimer</h3><p>KRED is an informational tool. We do not guarantee employment outcomes. The "Risk Score" is an AI-generated metric based on corporate hiring standards.</p>
-                        <h3>Refunds</h3><p>Due to the digital nature of the service, refunds are only issued if a scan fails to complete.</p>`
-            };
-
-            function openLegal(type) {
-                legalTitle.innerText = type === 'faq' ? "FAQ" : (type === 'privacy' ? "PRIVACY POLICY" : "TERMS OF SERVICE");
-                legalBody.innerHTML = content[type];
-                legalModal.classList.remove('hidden');
-                legalModal.style.display = 'flex';
-            }
-
-            function closeLegal() {
-                legalModal.classList.add('hidden');
-                legalModal.style.display = 'none';
-            }
-
-            // Butoane
-            document.getElementById('nav-faq-btn').addEventListener('click', () => openLegal('faq'));
-            document.getElementById('foot-faq').addEventListener('click', () => openLegal('faq'));
-            document.getElementById('foot-privacy').addEventListener('click', () => openLegal('privacy'));
-            document.getElementById('foot-terms').addEventListener('click', () => openLegal('terms'));
-            
-            document.getElementById('close-legal-x').addEventListener('click', closeLegal);
-            document.getElementById('close-legal-btn').addEventListener('click', closeLegal);
-        });
+            print();
+        }
     </script>
 </body>
 </html>
