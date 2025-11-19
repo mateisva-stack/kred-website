@@ -53,9 +53,9 @@
         .btn-kred { 
             background: white; color: black; font-weight: 900; letter-spacing: 1px; 
             transition: all 0.2s ease; border: 1px solid white; cursor: pointer;
-            position: relative; z-index: 9999; 
+            position: relative; z-index: 50; 
         }
-        .btn-kred:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-kred:active { transform: scale(0.96); opacity: 0.9; background: #ddd; }
         
         .terminal-line { border-right: 2px solid white; animation: blink-cursor 1s step-end infinite; white-space: nowrap; overflow: hidden; width: fit-content; padding-right: 5px; }
         
@@ -68,8 +68,7 @@
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0, 0, 0, 0.95); z-index: 99999; 
-            display: none; /* Ascuns initial */
-            justify-content: center; align-items: center; padding: 1rem;
+            display: none; justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content { 
             background: #0A0A0A; border: 1px solid #2563EB; 
@@ -77,6 +76,11 @@
             border-radius: 12px; position: relative; box-shadow: 0 0 50px rgba(37, 99, 235, 0.2);
         }
         .blur-text { color: transparent; text-shadow: 0 0 8px rgba(255,255,255,0.6); user-select: none; filter: blur(3px); }
+        
+        .legal-text h3 { color: white; font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .legal-text p { color: #9CA3AF; font-size: 0.8rem; margin-bottom: 0.5rem; line-height: 1.4; }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="antialiased flex flex-col min-h-screen">
@@ -86,7 +90,7 @@
     <nav class="fixed w-full z-40 top-0 border-b border-white/5 bg-black/90 backdrop-blur-md">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="text-3xl md:text-4xl font-black tracking-tighter font-sans text-white">KRED.</div>
-            <button onclick="openModal('legal-modal')" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
+            <button id="nav-faq-btn" class="text-[10px] border border-white/20 px-4 py-1.5 rounded font-mono uppercase hover:bg-white hover:text-black transition cursor-pointer">
                 FAQ
             </button>
         </div>
@@ -102,18 +106,15 @@
         <div id="input-section" class="w-full max-w-md flex flex-col gap-4 mb-12">
             <p class="text-gray-400 text-sm text-center mb-2 font-light">Enter target username to begin forensic audit:</p>
             
-            <form id="scan-form" onsubmit="event.preventDefault(); startScan();" class="w-full flex flex-col gap-4">
-                <div class="relative">
-                    <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
-                    <input type="text" id="username-input" placeholder="instagram_user" 
-                        class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest"
-                        autocomplete="off" autocorrect="off" autocapitalize="none">
-                </div>
+            <div class="relative">
+                <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-sm">></span>
+                <input type="text" id="username-input" placeholder="instagram_user" 
+                    class="kred-input w-full py-3 pl-8 pr-4 rounded text-sm uppercase tracking-widest">
+            </div>
 
-                <button type="submit" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
-                    INITIATE SCAN
-                </button>
-            </form>
+            <button id="scan-btn" class="btn-kred w-full py-4 rounded-lg text-sm uppercase font-bold">
+                INITIATE SCAN
+            </button>
             
             <p class="text-center text-xs md:text-sm text-gray-400 font-mono font-bold tracking-widest mt-2">
                 SECURE CONNECTION • ANONYMOUS • ENCRYPTED
@@ -127,7 +128,7 @@
                 <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
                 <div class="ml-auto text-[9px] text-gray-600 font-mono">root@kred-core</div>
             </div>
-            <div class="p-4 font-mono text-xs h-64 overflow-y-auto relative bg-black/40" id="terminal-scroll">
+            <div id="terminal-scroll" class="p-4 font-mono text-xs h-64 overflow-y-auto relative bg-black/40">
                 <div id="terminal-text" class="space-y-2 text-gray-400 pb-10"></div>
             </div>
         </div>
@@ -141,6 +142,9 @@
                 <p class="text-gray-600 text-[10px] mt-1">&copy; 2025 KRED INTELLIGENCE INC.</p>
             </div>
             <div class="flex gap-6 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+                <button id="foot-privacy" class="hover:text-white">Privacy</button>
+                <button id="foot-terms" class="hover:text-white">Terms</button>
+                <button id="foot-faq" class="hover:text-white">FAQ</button>
                 <a href="mailto:kred.security@proton.me" class="hover:text-white">Contact</a>
             </div>
         </div>
@@ -193,91 +197,131 @@
     <div id="legal-modal" class="modal-overlay">
         <div class="modal-content p-8 bg-black border border-white/10">
             <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h2 class="text-xl font-bold text-white font-mono">FAQ</h2>
-                <button onclick="closeModal('legal-modal')" class="text-gray-500 hover:text-white text-xl">✕</button>
+                <h2 id="legal-title" class="text-xl font-bold text-white font-mono">LEGAL</h2>
+                <button id="close-legal-x" class="text-gray-500 hover:text-white text-xl">✕</button>
             </div>
-            <div class="text-gray-400 text-xs leading-relaxed">
-                <p class="mb-4"><b>How does it work?</b><br>We use AI-driven OSINT tools to scan digital footprints.</p>
-                <p class="mb-4"><b>Is it anonymous?</b><br>Yes. The target is never notified.</p>
-                <p><b>Turnaround?</b><br>To ensure accuracy, reports are finalized in 2-12 hours.</p>
-            </div>
-            <button onclick="closeModal('legal-modal')" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
+            <div id="legal-body" class="legal-text text-left h-64 overflow-y-auto pr-2"></div>
+            <button id="close-legal-btn" class="mt-6 w-full py-3 bg-white/10 text-white text-xs uppercase rounded">Close</button>
         </div>
     </div>
 
     <script>
-        // --- PUNE LINK-UL TAU AICI ---
+        // --- CONFIGURARE LINK STRIPE ---
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00”;
-        document.getElementById('stripe-btn').href = STRIPE_LINK;
+        
+        // Asteptam sa se incarce pagina
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        function startScan() {
-            var userField = document.getElementById('username-input');
-            var inputSection = document.getElementById('input-section');
-            var terminalContainer = document.getElementById('terminal-container');
+            // === LOGICA SCANARE ===
+            const scanBtn = document.getElementById('scan-btn');
             
-            var user = userField.value.trim();
-            
-            // Ascundem tastatura pe mobil
-            userField.blur();
+            // Functia de start
+            function triggerScan() {
+                const userField = document.getElementById('username-input');
+                const user = userField.value.trim();
+                
+                userField.blur(); // Ascunde tastatura
 
-            if (!user) {
-                userField.style.borderColor = "red";
-                userField.placeholder = "REQUIRED";
-                return;
-            }
-
-            // Schimbam ecranele (folosind style.display e cel mai sigur)
-            inputSection.style.display = 'none';
-            terminalContainer.style.display = 'block'; // Aratam terminalul
-            terminalContainer.classList.remove('hidden'); // Si scoatem clasa hidden
-
-            runScript(user);
-        }
-
-        function runScript(username) {
-            var terminal = document.getElementById('terminal-text');
-            var msgs = [
-                { t: "> Target acquired: " + username, c: "text-kred-green" },
-                { t: "> Establishing secure tunnel...", c: "text-gray-500" },
-                { t: "> Searching public archives (Twitter/X, Instagram)...", c: "text-white" },
-                { t: "> [!] 2,104 raw data points located.", c: "text-kred-blue" },
-                { t: "> Cross-referencing risk patterns...", c: "text-gray-400" },
-                { t: "> Data capture: COMPLETE.", c: "text-kred-green" },
-                { t: "> Initializing Forensic AI Engine...", c: "text-white" },
-                { t: "> Awaiting authorization to proceed...", c: "text-white" },
-                { t: ">> PROCESS PAUSED. PAYMENT REQUIRED.", c: "text-kred-yellow" }
-            ];
-
-            var i = 0;
-            function print() {
-                if (i >= msgs.length) {
-                    setTimeout(function() {
-                        document.getElementById('warning-modal').style.display = 'flex';
-                    }, 800);
+                if (!user) {
+                    userField.style.borderColor = "red";
+                    userField.placeholder = "REQUIRED";
                     return;
                 }
-                var p = document.createElement('p');
-                p.className = msgs[i].c + " terminal-line";
-                p.innerText = msgs[i].t;
-                terminal.appendChild(p);
+
+                document.getElementById('input-section').style.display = 'none';
+                const terminal = document.getElementById('terminal-container');
+                terminal.classList.remove('hidden');
+                terminal.style.display = 'block';
                 
-                // Scroll la fund
-                var scrollArea = document.getElementById('terminal-scroll');
-                scrollArea.scrollTop = scrollArea.scrollHeight;
-                
-                i++;
-                setTimeout(print, 600);
+                runScript(user);
             }
-            print();
-        }
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
+            // ASCULTATOR CLICK (PC)
+            scanBtn.addEventListener('click', triggerScan);
+            // ASCULTATOR TOUCH (MOBILE)
+            scanBtn.addEventListener('touchend', (e) => {
+                e.preventDefault(); // Previne dublu click
+                triggerScan();
+            });
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+            function runScript(username) {
+                const terminalText = document.getElementById('terminal-text');
+                const msgs = [
+                    { t: `> Target acquired: ${username}`, c: "text-kred-green" },
+                    { t: "> Establishing secure tunnel...", c: "text-gray-500" },
+                    { t: "> Searching public archives (Twitter/X, Instagram)...", c: "text-white" },
+                    { t: "> [!] 2,104 raw data points located.", c: "text-kred-blue" },
+                    { t: `> Cross-referencing risk patterns...`, c: "text-gray-400" },
+                    { t: `> Data capture: COMPLETE.`, c: "text-kred-green" },
+                    { t: "> Initializing Forensic AI Engine...", c: "text-white" },
+                    { t: "> Awaiting authorization to proceed...", c: "text-white" },
+                    { t: ">> PROCESS PAUSED. PAYMENT REQUIRED.", c: "text-kred-yellow" }
+                ];
+
+                let i = 0;
+                function print() {
+                    if (i >= msgs.length) {
+                        setTimeout(() => {
+                            const modal = document.getElementById('warning-modal');
+                            modal.classList.remove('hidden');
+                            modal.style.display = 'flex';
+                        }, 800);
+                        return;
+                    }
+                    const p = document.createElement('p');
+                    p.className = msgs[i].c + " terminal-line";
+                    p.innerText = msgs[i].t;
+                    terminalText.appendChild(p);
+                    
+                    // Scroll
+                    const scrollArea = document.getElementById('terminal-scroll');
+                    if(scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+                    
+                    i++;
+                    setTimeout(print, 600);
+                }
+                print();
+            }
+
+            // === LOGICA LEGAL / FAQ ===
+            const legalModal = document.getElementById('legal-modal');
+            const legalTitle = document.getElementById('legal-title');
+            const legalBody = document.getElementById('legal-body');
+
+            const content = {
+                faq: `<h3>How does it work?</h3><p>We use AI-driven OSINT tools to scan your public digital footprint across major social platforms and web archives.</p>
+                      <h3>Is it anonymous?</h3><p>Yes. The target profile is never notified of the scan. Your data is encrypted and deleted after the report is generated.</p>
+                      <h3>What do I get?</h3><p>You receive a comprehensive PDF Forensic Report detailing flagged posts, risk scores, and direct links to problematic content for remediation.</p>
+                      <h3>Turnaround time?</h3><p>Most reports are generated within 2-4 hours. Deep archive scans may take up to 12 hours.</p>`,
+                privacy: `<h3>Privacy Policy</h3><p>KRED Intelligence Inc. respects your privacy. We do not sell, trade, or rent users' personal identification information to others.</p>
+                          <h3>Data Usage</h3><p>The data collected (usernames) is used solely for the purpose of conducting the requested audit. All report data is purged from our servers 7 days after delivery.</p>`,
+                terms: `<h3>Terms of Service</h3><p>By using KRED, you agree that this tool is for personal reputation management or authorized employment screening only.</p>
+                        <h3>Disclaimer</h3><p>KRED is an informational tool. We do not guarantee employment outcomes. The "Risk Score" is an AI-generated metric based on corporate hiring standards.</p>
+                        <h3>Refunds</h3><p>Due to the digital nature of the service, refunds are only issued if a scan fails to complete.</p>`
+            };
+
+            function openLegal(type) {
+                legalTitle.innerText = type === 'faq' ? "FAQ" : (type === 'privacy' ? "PRIVACY POLICY" : "TERMS OF SERVICE");
+                legalBody.innerHTML = content[type];
+                legalModal.classList.remove('hidden');
+                legalModal.style.display = 'flex';
+            }
+
+            function closeLegal() {
+                legalModal.classList.add('hidden');
+                legalModal.style.display = 'none';
+            }
+
+            // Butoane
+            document.getElementById('nav-faq-btn').addEventListener('click', () => openLegal('faq'));
+            document.getElementById('foot-faq').addEventListener('click', () => openLegal('faq'));
+            document.getElementById('foot-privacy').addEventListener('click', () => openLegal('privacy'));
+            document.getElementById('foot-terms').addEventListener('click', () => openLegal('terms'));
+            
+            document.getElementById('close-legal-x').addEventListener('click', closeLegal);
+            document.getElementById('close-legal-btn').addEventListener('click', closeLegal);
+        });
     </script>
 </body>
 </html>
