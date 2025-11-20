@@ -12,7 +12,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: { 'kred-black': '#050505', 'kred-blue': '#2563EB', 'kred-red': '#DC2626' },
+                    colors: { 'kred-black': '#050505', 'kred-blue': '#2563EB', 'kred-red': '#DC2626', 'kred-green': '#10B981', 'kred-yellow': '#F59E0B' },
                     animation: {
                         'slide-in-right': 'slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         'pulse-slow': 'pulse 3s infinite'
@@ -63,11 +63,11 @@
         /* TERMINAL */
         .terminal-box {
             background: rgba(0, 0, 0, 0.6); border-top: 1px solid #333;
-            font-family: 'JetBrains Mono', monospace; font-size: 12px;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; /* Font putin mai mic pt densitate */
             height: 300px; overflow-y: auto; padding: 20px;
             display: none; 
         }
-        .line { margin-bottom: 8px; border-right: 2px solid white; display: inline-block; animation: blink 1s infinite; }
+        .line { margin-bottom: 4px; border-right: 2px solid white; display: inline-block; animation: blink 1s infinite; line-height: 1.4; }
         @keyframes blink { 50% { border-color: transparent; } }
 
         /* MODALS (Main) */
@@ -96,7 +96,7 @@
         }
         #username-verify-modal .close-btn:hover { color: white; }
 
-        /* STATS POPUP (NOU & IMBUNATATIT) */
+        /* STATS POPUP */
         #stats-popup {
             position: fixed; top: 90px; right: 20px;
             max-width: 340px; width: 90%;
@@ -142,25 +142,21 @@
                 <span class="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
                 <p class="text-xs font-bold text-red-500 uppercase tracking-widest">Market Alert</p>
             </div>
-
             <div>
                 <p class="text-white text-sm font-medium">
                     <span class="text-4xl font-black text-white block mb-1">70%</span>
                     of employers <span class="text-gray-300">audit</span> your social media.
                 </p>
             </div>
-
             <div class="w-full h-1.5 bg-gray-800 rounded overflow-hidden">
                 <div class="h-full bg-gradient-to-r from-red-800 to-red-500 w-[70%]"></div>
             </div>
-
             <div>
                 <p class="text-white text-sm font-medium">
                     <span class="text-4xl font-black text-red-600 block mb-1">55%</span>
                     REJECT candidates based on findings.
                 </p>
             </div>
-
             <div class="mt-2 pt-3 border-t border-white/10">
                 <p class="text-white text-xs font-bold">
                     Don't let a post cost you a paycheck.<br>
@@ -335,15 +331,31 @@
             termArea.style.display = 'block';
             consoleOut.style.display = 'block';
 
+            // ULTRA CREDIBLE FORENSIC SCRIPT
             var lines = [
-                {t: "> Target acquired: " + user, c: "text-green-500"},
-                {t: "> Establishing secure tunnel...", c: "text-gray-500"},
-                {t: "> Searching archives (Twitter/X, Instagram)...", c: "text-white"},
-                {t: "> [!] 2,104 raw items located.", c: "text-blue-500"},
-                {t: "> Analyzing risk patterns...", c: "text-gray-400"},
-                {t: "> Data capture: COMPLETE.", c: "text-green-500"},
-                {t: "> Initializing AI Forensic Engine...", c: "text-white"},
-                {t: ">> PAUSED. AUTHORIZATION REQUIRED.", c: "text-yellow-500"}
+                {t: "> Target acquired: " + user, c: "text-kred-green"},
+                {t: "> Initializing secure tunnel (TLS 1.3)...", c: "text-gray-500"},
+                {t: "> Authenticating proxy chain (Node: US-East-1)...", c: "text-gray-500"},
+                {t: "> Connection Established. Session ID: #9X29a", c: "text-white"},
+                {t: "> [MODULE 1] TWITTER/X ARCHIVE", c: "text-kred-blue"},
+                {t: "> Bypassing rate limits... Success.", c: "text-gray-400"},
+                {t: "> Retrieving historical threads (2015-2025)...", c: "text-white"},
+                {t: "> [!] 1,402 text objects cached.", c: "text-white"},
+                {t: "> [MODULE 2] INSTAGRAM MEDIA", c: "text-kred-blue"},
+                {t: "> Running OCR on image assets...", c: "text-gray-400"},
+                {t: "> Analyzing tagged photos context...", c: "text-gray-400"},
+                {t: "> [MODULE 3] WEB FOOTPRINT", c: "text-kred-blue"},
+                {t: "> Querying Wayback Machine for deleted content...", c: "text-gray-500"},
+                {t: "> Cross-referencing data breaches (BreachComp_v9)...", c: "text-gray-500"},
+                {t: "> [ANALYSIS START]", c: "text-kred-yellow"},
+                {t: "> Initializing NLP Sentiment Engine (Toxic/Aggressive)...", c: "text-white"},
+                {t: "> Scanning for substance-related keywords...", c: "text-white"},
+                {t: "> Correlating timestamps with employment history...", c: "text-white"},
+                {t: "> [!] Anomalous patterns detected in 2019 timeline.", c: "text-kred-red"},
+                {t: "> Calculating Employability Risk Score...", c: "text-white"},
+                {t: "> Compiling PDF Report...", c: "text-white"},
+                {t: "> Encrypting results (AES-256)...", c: "text-white"},
+                {t: ">> PROCESS PAUSED. AUTHORIZATION REQUIRED.", c: "text-kred-yellow"}
             ];
 
             var i = 0;
@@ -352,7 +364,6 @@
                     setTimeout(function(){
                         document.getElementById('success-modal').style.display = 'flex';
                         
-                        // Show the username verification modal after 1 second - PERSISTENT
                         setTimeout(function() {
                             document.getElementById('displayed-username-check').innerText = user;
                             document.getElementById('username-verify-modal').style.display = 'block';
@@ -365,12 +376,18 @@
                 p.innerText = lines[i].t;
                 consoleOut.appendChild(p);
                 consoleOut.scrollTop = consoleOut.scrollHeight;
+                
                 if(i > 0) {
                     consoleOut.children[i-1].style.borderRight = "none";
                     consoleOut.children[i-1].style.animation = "none";
                 }
+                
+                // Viteza variabila pentru realism
+                var speed = Math.random() * (400 - 100) + 100; 
+                if (lines[i].t.includes("...")) speed += 400; // Pauza mai lunga la "loading"
+
                 i++;
-                setTimeout(print, 700);
+                setTimeout(print, speed);
             }
             print();
         }
