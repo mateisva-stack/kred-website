@@ -60,7 +60,7 @@
         .line { margin-bottom: 8px; border-right: 2px solid white; display: inline-block; animation: blink 1s infinite; }
         @keyframes blink { 50% { border-color: transparent; } }
 
-        /* MODALS */
+        /* MODALS (Main) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 100;
@@ -72,6 +72,30 @@
             box-shadow: 0 0 50px rgba(37, 99, 235, 0.3); position: relative;
         }
         
+        /* WARNING MODAL (New) */
+        #username-verify-modal {
+            position: fixed; top: 10%; right: 10%; /* Adjust as needed */
+            width: auto; max-width: 300px; /* Make it substantial */
+            padding: 15px;
+            background: #222; /* Darker background */
+            border: 1px solid #FFD700; /* Gold/yellow border */
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); /* Yellow glow */
+            z-index: 101; /* Above other modals */
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-out; /* Smooth entrance */
+        }
+        #username-verify-modal .close-btn {
+            position: absolute; top: 5px; right: 10px;
+            font-size: 18px; cursor: pointer; color: #aaa;
+        }
+        #username-verify-modal .close-btn:hover { color: white; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* LEGAL TEXT */
         .legal-content { text-align: left; max-height: 60vh; overflow-y: auto; font-size: 12px; color: #aaa; line-height: 1.5; }
         .legal-content h3 { color: white; font-weight: bold; margin-top: 15px; margin-bottom: 5px; }
@@ -99,7 +123,7 @@
         <div id="input-area" class="w-full max-w-md space-y-6">
             <p class="text-center text-gray-400 text-sm">Enter target username:</p>
             
-            <input type="text" id="username" class="kred-input" placeholder="INSTAGRAM_USER">
+            <input type="text" id="username" class="kred-input" placeholder="INSTAGRAM_USER" oninput="this.value = this.value.toUpperCase()">
             
             <button type="button" onclick="runScan()" class="btn-kred">
                 INITIATE SCAN
@@ -153,10 +177,6 @@
                 </p>
             </div>
 
-            <p class="text-yellow-500 text-[10px] font-bold mb-2">
-                ⚠️ PLEASE VERIFY THE USERNAME IS CORRECT BEFORE PAYING
-            </p>
-
             <a id="stripe-btn" href="#" class="btn-kred block no-underline text-black hover:bg-gray-200">
                 Authorize & Start Audit ($29)
             </a>
@@ -174,6 +194,16 @@
         </div>
     </div>
 
+    <div id="username-verify-modal">
+        <button class="close-btn" onclick="document.getElementById('username-verify-modal').style.display='none'">✕</button>
+        <p class="text-yellow-400 font-bold text-sm mb-2">
+            ⚠️ Double-check Username\!
+        </p>
+        <p class="text-gray-300 text-xs">
+            Make sure "<span class="text-yellow-200" id="displayed-username-check"></span>" is correct to avoid paying for the wrong report.
+        </p>
+    </div>
+
     <div id="legal-modal" class="modal-overlay">
         <div class="modal-box border-white/20">
             <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
@@ -187,29 +217,37 @@
     </div>
 
     <script>
-        // --- LINK-UL TAU REAL INTEGRAT ---
+        // --- LINK STRIPE ---
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00";
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // LOGICA DE RESET (Click in afara)
+        // --- LOGICA INCHIDERE MODALE (CLICK IN AFARA) ---
         window.onclick = function(event) {
             var successModal = document.getElementById('success-modal');
             var legalModal = document.getElementById('legal-modal');
+            var verifyModal = document.getElementById('username-verify-modal'); // Get new modal
             
             if (event.target == successModal) {
-                // 1. Ascunde Modalul
                 successModal.style.display = "none";
-                
-                // 2. Reseteaza Interfata (Back to Start)
-                document.getElementById('terminal-area').style.display = "none"; // Ascunde terminal
-                document.getElementById('input-area').style.display = "block";   // Arata input
-                document.getElementById('console-output').innerHTML = "";        // Sterge logurile vechi
-                document.getElementById('username').value = "";                  // Goleste inputul
+                verifyModal.style.display = "none"; // Also hide verify modal
+                resetUI(); // Reset UI to start a new scan
             }
-
             if (event.target == legalModal) {
                 legalModal.style.display = "none";
             }
+             // Allow direct closing of verify modal by clicking outside it, if it's the only one open
+            if (event.target == verifyModal && successModal.style.display == "none") {
+                verifyModal.style.display = "none";
+            }
+        }
+
+        // Function to reset UI to initial state
+        function resetUI() {
+            document.getElementById('terminal-area').style.display = "none";
+            document.getElementById('input-area').style.display = "block";
+            document.getElementById('console-output').innerHTML = "";
+            document.getElementById('username').value = "";
+            document.getElementById('username').style.borderColor = "#333"; // Reset border color
         }
 
         // SCAN LOGIC
@@ -249,6 +287,15 @@
                 if(i >= lines.length) {
                     setTimeout(function(){
                         document.getElementById('success-modal').style.display = 'flex';
+                        // Show the username verification modal after 1 second
+                        setTimeout(function() {
+                            document.getElementById('displayed-username-check').innerText = user;
+                            document.getElementById('username-verify-modal').style.display = 'block';
+                            // Hide the verify modal automatically after 5 seconds if not closed
+                            setTimeout(function() {
+                                document.getElementById('username-verify-modal').style.display = 'none';
+                            }, 5000); 
+                        }, 1000); // 1-second delay for the warning modal
                     }, 1000);
                     return;
                 }
