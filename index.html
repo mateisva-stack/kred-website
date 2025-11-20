@@ -147,11 +147,15 @@
                 To proceed with the <strong>Deep Forensic Analysis</strong>, authorization is required.
             </p>
 
-            <div class="bg-blue-900/30 border border-blue-500/30 rounded p-3 mb-8">
+            <div class="bg-blue-900/30 border border-blue-500/30 rounded p-3 mb-6">
                 <p class="text-white text-xs font-bold">
                     📄 Your encrypted PDF report will be sent directly to your email in 6-12 hours.
                 </p>
             </div>
+
+            <p class="text-yellow-500 text-[10px] font-bold mb-2">
+                ⚠️ PLEASE VERIFY THE USERNAME IS CORRECT BEFORE PAYING
+            </p>
 
             <a id="stripe-btn" href="#" class="btn-kred block no-underline text-black hover:bg-gray-200">
                 Authorize & Start Audit ($29)
@@ -183,19 +187,26 @@
     </div>
 
     <script>
-        // --- LINK STRIPE ---
+        // --- LINK-UL TAU REAL INTEGRAT ---
         const STRIPE_LINK = "https://buy.stripe.com/dRm7sKcIg7QI14w7j30kE00";
         document.getElementById('stripe-btn').href = STRIPE_LINK;
 
-        // --- LOGICA INCHIDERE MODALE (CLICK IN AFARA) ---
+        // LOGICA DE RESET (Click in afara)
         window.onclick = function(event) {
             var successModal = document.getElementById('success-modal');
             var legalModal = document.getElementById('legal-modal');
             
             if (event.target == successModal) {
+                // 1. Ascunde Modalul
                 successModal.style.display = "none";
-                // Optional: Reset UI if needed, but user might want to scan again
+                
+                // 2. Reseteaza Interfata (Back to Start)
+                document.getElementById('terminal-area').style.display = "none"; // Ascunde terminal
+                document.getElementById('input-area').style.display = "block";   // Arata input
+                document.getElementById('console-output').innerHTML = "";        // Sterge logurile vechi
+                document.getElementById('username').value = "";                  // Goleste inputul
             }
+
             if (event.target == legalModal) {
                 legalModal.style.display = "none";
             }
